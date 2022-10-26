@@ -1,0 +1,6 @@
+USE [master]
+GO
+
+BACKUP DATABASE {{ database_name }}
+TO DISK=N'{{ vm_mssql_host_backup_path }}\{{ database_name }}_Backup.bak'
+GO

@@ -1,0 +1,12 @@
+resourcegroup                = "IOCS-MediumDB"
+server_instancetype          = "m6i.4xlarge"
+custom_profile               = "aws_mssql_MediumDB"
+database_name                = "tpcc_320WH"
+spawn_disks                  = true
+server_disks_wal_size        = 1024
+server_disks_data_size       = 16384
+server_disks_data_disks      = 2
+server_os_disksize           = 1024
+server_storagetype           = "gp3"
+server_disks_data_throughput = 500
+server_disks_data_iops       = 8000

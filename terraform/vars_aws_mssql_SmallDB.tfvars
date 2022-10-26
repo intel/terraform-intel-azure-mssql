@@ -1,0 +1,10 @@
+resourcegroup           = "IOCS-SmallDB"
+server_instancetype     = "m6i.2xlarge"
+custom_profile          = "aws_mssql_SmallDB"
+database_name           = "tpcc_80WH"
+spawn_disks             = true
+server_disks_wal_size   = 1024
+server_disks_data_size  = 16384
+server_disks_data_disks = 1
+server_os_disksize      = 1024
+server_storagetype      = "gp3"

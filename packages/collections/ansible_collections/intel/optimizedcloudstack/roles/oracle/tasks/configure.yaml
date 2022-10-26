@@ -1,0 +1,190 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Set Oracle system user password if provided by user
+  ansible.builtin.set_fact:
+    oracle_sysuser_pass: "{{ oracle.sysuser_password }}"
+
+- name: Set Oracle hammerdb user password if provided by user
+  ansible.builtin.set_fact:
+    hammerdb_pass: "{{ hammerdb.password }}"
+
+- name: Prepare data and logs directories if they dont exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - "{{ oracle_mount_dir }}"
+    - "{{ oracle_log_dir }}"
+  become: true
+
+- name: Set owner of log directory
+  ansible.builtin.file:
+    path: "{{ oracle_log_dir }}"
+    owner: oracle
+  become: true
+
+- name: Stop and disable firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  become: true
+
+- name: Modify memory limits configuration
+  ansible.builtin.pam_limits:
+    dest: /etc/security/limits.d/oracle-database-preinstall-19c.conf
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.limit_type }}"
+    limit_item: nofile
+    value: 65536
+  loop:
+    - domain: grid
+      limit_type: soft
+    - domain: grid
+      limit_type: hard
+    - domain: oracle
+      limit_type: soft
+    - domain: oracle
+      limit_type: hard
+  become: true
+
+- name: Generate Oracle system user password
+  ansible.builtin.set_fact:
+    oracle_sysuser_pass: "{{ lookup('password', '/dev/null chars=ascii_lowercase,ascii_uppercase,digits length=8') }}1aA"
+  when: oracle.sysuser_password | length == 0
+
+- name: Generate Oracle hammerdb user password
+  ansible.builtin.set_fact:
+    hammerdb_pass: "{{ lookup('password', '/dev/null chars=ascii_lowercase,ascii_uppercase,digits length=8') }}1aA"
+  when: hammerdb.password | length == 0
+
+- name: Show generated oracle system user password
+  ansible.builtin.debug:
+    msg: "{{ oracle_sysuser_pass }}"
+  when: oracle.sysuser_password | length == 0
+
+- name: Show generated oracle hammerdb user password
+  ansible.builtin.debug:
+    msg: "{{ hammerdb_pass }}"
+  when: hammerdb.password | length == 0
+
+- name: Check Oracle DB listener status
+  ansible.builtin.command: bash -ilc 'lsnrctl status'
+  register: db_listener_status
+  changed_when: false
+  failed_when: db_listener_status.rc != 0 and db_listener_status.rc != 1
+  become: true
+  become_user: oracle
+
+- name: Start Oracle DB listener
+  ansible.builtin.command: bash -ilc 'lsnrctl start'
+  when: "'The command completed successfully' not in db_listener_status.stdout"
+  changed_when: true
+  become: true
+  become_user: oracle
+
+- name: Prepare Oracle DB data directory
+  ansible.builtin.file:
+    path: "{{ oracle_mount_dir }}"
+    state: directory
+    mode: "0755"
+    owner: oracle
+  become: true
+
+- name: Check if Oracle database service is created
+  ansible.builtin.command: bash -ilc 'set -o pipefail && cat /etc/oratab | grep "{{ oracle.service_name }}:"'
+  register: db_status
+  changed_when: false
+  failed_when: db_status.rc != 0 and db_status.rc != 1
+  become_user: oracle
+
+- name: Create database
+  ansible.builtin.command: bash -ilc \
+    'dbca -silent \
+    -createDatabase \
+    -templateName General_Purpose.dbc \
+    -gdbname {{ oracle.service_name }} \
+    -sid {{ oracle.service_name }} \
+    -responseFile NO_VALUE \
+    -characterSet AL32UTF8 \
+    -sysPassword "{{ oracle_sysuser_pass }}" \
+    -systemPassword "{{ oracle_sysuser_pass }}" \
+    -createAsContainerDatabase false \
+    -databaseType MULTIPURPOSE \
+    -automaticMemoryManagement false \
+    -storageType FS \
+    -datafileDestination "{{ oracle_mount_dir }}" \
+    -ignorePreReqs'
+  when: db_status.rc == 1
+  become: true
+  become_user: oracle
+
+- name: Set Oracle SID
+  ansible.builtin.lineinfile:
+    dest: "{{ oracle.home_path }}/.bashrc"
+    line: "export ORACLE_SID={{ oracle.service_name }}"
+    search_string: "export ORACLE_SID"
+    owner: oracle
+    state: present
+  when: db_status.rc == 1
+  become: true
+  become_user: oracle
+
+- name: Prepare Oracle SQL queries
+  ansible.builtin.template:
+    mode: "0755"
+    src: "{{ item }}.sql.j2"
+    dest: "{{ oracle.home_path }}/{{ item }}.sql"
+  loop:
+    - prepare_db
+    - tune_db
+    - prepare_ol_table
+  when: db_status.rc == 1
+  become: true
+  become_user: oracle
+
+- name: Prepare configuration file with tuned parameters
+  ansible.builtin.template:
+    mode: "0755"
+    src: db_configuration.pfile.j2
+    dest: "{{ oracle.home_path }}/db_configuration.pfile"
+  when: db_status.rc == 1
+  become: true
+  become_user: oracle
+
+- name: Create hammerdb user and tablespace
+  ansible.builtin.command: bash -ilc 'sqlplus {{ oracle.sysuser }}/{{ oracle_sysuser_pass }} @prepare_db.sql'
+  args:
+    chdir: "{{ oracle.home_path }}"
+  changed_when: false
+  become: true
+  become_user: oracle
+  async: 86400
+  poll: 15
+
+- name: Configure database with tuned parameters
+  ansible.builtin.command: bash -ilc 'sqlplus / as sysdba @tune_db.sql'
+  args:
+    chdir: "{{ oracle.home_path }}"
+  changed_when: false
+  become: true
+  become_user: oracle
+  async: 86400
+  poll: 15
+
+- name: Prepare Order Line tablespace if more than 200 warehouses
+  ansible.builtin.command: bash -ilc 'sqlplus / as sysdba @prepare_ol_table.sql'
+  args:
+    chdir: "{{ oracle.home_path }}"
+  changed_when: false
+  become: true
+  become_user: oracle
+  async: 86400
+  poll: 15
+  when: warehouses >= 200

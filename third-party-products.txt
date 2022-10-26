@@ -1,0 +1,11 @@
+Third party products required by this software (but not distributed by Intel) are specified below, for which the usage is governed by separate licenses.
+
+- Amazon EC2 PowerShell Tools (https://docs.aws.amazon.com/powershell/latest/userguide/pstools-welcome.html).
+- Microsoft Windows Server 2019 Azure Marketplace Image (https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftwindowsserver.windowsserver?tab=overview)
+- Microsoft SQL Server Enterprise 2019 Azure Marketplace Image (https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftsqlserver.sql2019-ws2019?tab=overview)
+- Microsoft Windows Server 2019 Base AWS EC2 AMI (https://aws.amazon.com/marketplace/pp/prodview-bd6o47htpbnoe)
+- Microsoft SQL Server 2019 Enterprise on Windows Server 2019 AWS EC2 AMI (https://aws.amazon.com/marketplace/pp/prodview-btjcozd246p6w)
+- Microsoft SQL Server ODBC 17 (https://www.microsoft.com/en-us/download/details.aspx?id=56567)
+- Microsoft SQL Server IaaS Agent extension (https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?view=azuresql&tabs=azure-powershell)
+- Microsoft Visual Studio 2019 Redistributable packages (https://docs.microsoft.com/en-us/visualstudio/releases/2019/redistribution)
+- Oracle Database 19c Azure Marketplace Image (https://azuremarketplace.microsoft.com/en-us/marketplace/apps/oracle.oracle-database-19-3?tab=overview)

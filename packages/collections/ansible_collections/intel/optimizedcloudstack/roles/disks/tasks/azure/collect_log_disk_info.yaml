@@ -1,0 +1,39 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Prepare list of log disks luns
+  ansible.builtin.set_fact.set_fact:
+    log_disk_luns: []
+
+- name: Find all disks attached to VM
+  ansible.builtin.find:
+    paths: "{{ azure_disk_device_path }}"
+    file_type: link
+    recurse: true
+  register: disk_luns
+  become: true
+
+- name: Register only devices identified by luns
+  ansible.builtin.set_fact:
+    log_disk_luns: "{{ log_disk_luns + [item.path] }}"
+  when:
+    - (item.path | basename) == 'lun1'
+  loop: "{{ disk_luns.files }}"
+
+- name: Get device name of log disks
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: log_disk_stat
+  loop: "{{ log_disk_luns }}"
+  become: true
+
+- name: Update available devices by log disk if it exists
+  ansible.builtin.set_fact:
+    available_devices: "{{ available_devices | combine({ item.stat.lnk_source : 'log_disk'}) }}"
+  when:
+    - ansible_devices[item.stat.lnk_source | basename].partitions == {}
+  loop: "{{ log_disk_stat.results }}"

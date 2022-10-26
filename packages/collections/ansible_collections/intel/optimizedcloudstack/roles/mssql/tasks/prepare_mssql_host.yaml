@@ -1,0 +1,30 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Copy SQL configuration script to %TEMP%
+  ansible.windows.win_copy:
+    src: templates/configure_mssql_no_invoke.ps1
+    dest: '%TEMP%\configure_mssql_vm.ps1'
+
+- name: Configure SQL using Powershell script
+  register: configure_mssql_vm_output
+  ansible.windows.win_command: >2-
+    powershell.exe ./configure_mssql_vm.ps1
+    -dbname {{ database_name }}
+    -user {{ mssql.username }}
+    -pass {{ mssql.password }}
+    -no_data_disk {{ server_disks_data_disks }}
+    -startup_flags '"{{ database_startup_flags }}"'
+  args:
+    chdir: "%TEMP%"
+    creates: "%TEMP%/sql_configured"
+  async: 180000
+  poll: 10
+
+- name: Return all output from the script
+  ansible.builtin.debug:
+    var: configure_mssql_vm_output

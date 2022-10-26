@@ -1,0 +1,7 @@
+{{ oracle.service_name }}=
+ (description=
+     (address = (protocol = TCP)(host = {{ oracle_listening_ip }})(port = 1521))
+ (connect_data =
+   (SID={{ oracle.service_name }})
+ )
+)

@@ -1,0 +1,66 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Classify hosts depending on their OS family
+  ansible.builtin.group_by:
+    key: "os_family_{{ ansible_facts['os_family'] }}"
+
+- name: Classify hosts depending on their OS distribution
+  ansible.builtin.group_by:
+    key: "os_distribution_{{ ansible_facts['distribution'] }}"
+
+- name: Set version of hammerdb
+  ansible.builtin.set_fact:
+    hammerdb_archive_url: "{{ hammerdb_urls[hammerdb_version] }}"
+    hammerdb_install_path: "/opt/HammerDB-{{ hammerdb_version }}"
+
+- name: Download and extract hammerdb package
+  ansible.builtin.unarchive:
+    src: "{{ hammerdb_archive_url }}"
+    dest: "{{ hammerdb.install_path_prefix }}"
+    remote_src: true
+    creates: "{{ hammerdb_install_path }}"
+  become: true
+
+- name: Prepare Oracle experiment configuration
+  ansible.builtin.template:
+    mode: "0755"
+    src: oracle/oracle.xml.j2
+    dest: "{{ hammerdb_install_path }}/config/oracle.xml"
+  become: true
+
+- name: Prepare experiment preparation definition
+  ansible.builtin.template:
+    mode: "0755"
+    src: oracle/schemabuild.tcl.j2
+    dest: "{{ hammerdb_install_path }}/schemabuild.tcl"
+  become: true
+
+- name: Get ORACLE_HOME path
+  ansible.builtin.shell: bash -ilc 'echo $ORACLE_HOME'
+  register: oracle_home
+  changed_when: false
+  become: true
+  become_user: oracle
+
+- name: Prepare tnsnames.ora file
+  ansible.builtin.template:
+    mode: "0755"
+    src: oracle/tnsnames.ora.j2
+    dest: "{{ oracle_home.stdout }}/network/admin/tnsnames.ora"
+  become: true
+  become_user: oracle
+
+- name: Set TNS_ADMIN path
+  ansible.builtin.lineinfile:
+    dest: "{{ oracle.home_path }}/.bashrc"
+    line: "export TNS_ADMIN=$ORACLE_HOME/network/admin"
+    search_string: "export TNS_ADMIN=$ORACLE_HOME/network/admin"
+    owner: oracle
+    state: present
+  become: true
+  become_user: oracle

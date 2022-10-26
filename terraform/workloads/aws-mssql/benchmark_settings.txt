@@ -1,0 +1,88 @@
+
+
+input.scenario (required)
+Select scenario for benchmark.
+
+input.ssh_allowed_ips (required)
+IPs to allow through SSH firewall. This field must be populated for any of benchmark automation to work! Using an empty list and literal range "0.0.0.0/0" is not allowed. Ranges are only correct if passed in form 'x.x.x.x/y'.
+
+input.access_key (null)
+AWS Access Key to use.
+
+input.custom_profile ("")
+Select preprepared custom scenario for benchmark test.
+
+input.database_password (null)
+Password for MS SQL database. If not set password will be randomly generated
+
+input.dbOnly (false)
+If set to "true", only the database VM is deployed.
+
+input.expose_rdp (false)
+Should RDP be exposed to the Internet?
+
+input.global_tags ({})
+Dictionary of tags that will be applied to deployment.
+
+input.linux (true)
+Run benchmark on Linux.
+
+input.location ("us-west-1")
+What AWS region should be used for the resources.
+
+input.make_key_vault (true)
+If true, key vault will be created and keys uploaded into it.
+
+input.rdp_allowed_ips (null)
+IPs to allow through RDP firewall. By default allows no addresses. This value is only used when expose_rdp is set to true simultaneously. Using literal range "0.0.0.0/0" is not allowed. Ranges are only correct if passed in form 'x.x.x.x/y'.
+
+input.resourcegroup ("IOCS")
+What resource group should be used to spawn the resources.
+
+input.secret_key (null)
+AWS Secret Key to use.
+
+input.server_disks_data_disks (2)
+Used only in MSSQL benchmark. How many data disks to use. Value can't be bigger than 16 disks and must be compliant to selected VM.
+
+input.server_disks_data_iops (3000)
+IOPS for supported AWS disks (io1, io2, gp3). Ignored on other storage types.
+
+input.server_disks_data_size (512)
+How big should each data disk be in GB? Minimally 1. Used in MSSQL, MySQL and Oracle (together with "spawn_disks"=true and mysql_mount_dir set to "/mnt/mysqldata" and oracle_mount_dir set to "/mnt/oracledata").
+
+input.server_disks_data_throughput (125)
+Throughput in MiB/s for AWS GP3 disks. Ignored on other storage types.
+
+input.server_disks_wal_iops (3000)
+IOPS for supported AWS disks (io1, io2, gp3). Ignored on other storage types.
+
+input.server_disks_wal_size (128)
+Used only in MSSQL benchmark. Specify the disk size used for SQL Server write-ahead log.
+
+input.server_disks_wal_throughput (125)
+Throughput in MiB/s for AWS GP3 disks. Ignored on other storage types.
+
+input.server_hammerdb_instancetype ("m5.8xlarge")
+Which instance type to use for HammerDB.
+
+input.server_instancetype ("m6i.4xlarge")
+Which instance type to use.
+
+input.server_os_disksize (1024)
+Size of database OS disk. Might need to be customized when not using spawn_disks set to "true" with large warehouses.
+
+input.server_os_name ("SQLServer2019")
+Sets which operating will be used for the database virtual machine.
+
+input.server_os_storagetype ("standard")
+Type of disks to use. Can be "io1", "io2", "gp2" and "gp3" and "standard".
+
+input.server_storagetype ("gp2")
+Type of disks to use. Can be "io1", "io2", "gp2" and "gp3".
+
+input.vm_tags ({})
+Dictionary of additional tags that will be applied to VMs only.
+
+input.windows (false)
+Run benchmark on Windows.

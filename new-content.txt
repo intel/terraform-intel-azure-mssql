@@ -1,0 +1,8 @@
+Intel Optimized Cloud Stack v2.1 incorporates the below changes and more:
+- Added support for MSSQL Server 2019 Enterprise on AWS Public Cloud with verified Small and Medium configurations, 
+- Added support for Oracle Database 19c on Azure Public Cloud with verified Small and Medium configurations, 
+- Added post-configuration feature which allows launching of user-delivered playbooks, 
+- Added support for RHEL8.1 and Ubuntu 20.04 base OS for Azure on MSSQL workload,  
+- Added support for up to 16 disks for MSSQL workloads, 
+- Minor bug and security fixes in the workflow. 
+Users are responsible for installing and updating any third-party components on their systems. Intel recommends that systems use the latest available software versions for all User-installed third party components, and follow all third party secure configuration guidance.

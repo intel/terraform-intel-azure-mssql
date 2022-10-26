@@ -1,0 +1,8 @@
+define num_days = {{ awr.num_days }};
+define begin_snap = {{ hostvars[groups['load_generator'][0]]['awr_begin_snap'] }};
+define end_snap = {{ hostvars[groups['load_generator'][0]]['awr_end_snap'] }};
+define report_type = {{ awr.report_type }};
+define report_name = {{ awr.report_name }};
+
+@?/rdbms/admin/awrrpt.sql
+exit

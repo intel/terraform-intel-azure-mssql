@@ -1,0 +1,1 @@
+../common/aws-variables.tf

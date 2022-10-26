@@ -1,0 +1,66 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# @var metrics_list_vms: [ Percentage CPU, Disk Read Bytes, Disk Write Bytes, Disk Read Operations/sec, Disk Write Operations/sec, Data Disk Queue Depth, OS Disk Queue Depth ] # List of metrics to retrieve from VMs via API
+metrics_list_vms:
+  - Percentage CPU
+  - Disk Read Bytes
+  - Disk Write Bytes
+  - Disk Read Operations/sec
+  - Disk Write Operations/sec
+  - Data Disk Queue Depth
+  - OS Disk Queue Depth
+
+# @var metrics_list_disks: [ Composite Disk Read Bytes/sec, Composite Disk Write Bytes/sec, Composite Disk Read Operations/sec, Composite Disk Write Operations/sec ] # List of metrics to retrieve from disks via API
+metrics_list_disks:
+  - Composite Disk Read Bytes/sec
+  - Composite Disk Write Bytes/sec
+  - Composite Disk Read Operations/sec
+  - Composite Disk Write Operations/sec
+
+# @var metrics_auth_vars: [ subscription_id, client_id, client_secret, resourcegroup, tenant_id] # List of neccessary variables to check if they are defined for proper authorization [CAN BE OVERWRITEN]
+metrics_auth_vars:
+  - subscription_id
+  - client_id
+  - client_secret
+  - resourcegroup
+  - tenant_id
+
+# @var metrics_api_parameters # List with neccessary variables for requests, which include resource lists endpoints, API's versions for different resources and URL methods used
+metrics_api_parameters:
+  - resource_list_url: "providers/Microsoft.Compute/virtualMachines"
+    api_version: "api-version=2021-03-01"
+    method: GET
+  - resource_list_url: "providers/Microsoft.Compute/disks"
+    api_version: "api-version=2021-04-01"
+    method: GET
+
+# @var metrics_encoded_list # Dict with encoded comma-separated metrics to retrieve from given resource
+metrics_encoded_list:
+  Microsoft.Compute/virtualMachines: "{{ metrics_list_vms | join(',') | urlencode }}"
+  Microsoft.Compute/disks: "{{ metrics_list_disks | join(',') | urlencode }}"
+
+# @var tmp, list_of_jsons, resources_urls, metrics_values, resource_types: [] # some temporary and/or 'global' variables to keep tasks code clean
+tmp: []
+list_of_jsons: []
+resources_urls: []
+metrics_values: []
+resources_types: []
+# @var metrics_auth_body_url: https://management.core.windows.net # Beginning of URL used for authentication with metrics API
+metrics_auth_body_url: "https://management.core.windows.net"
+# @var metrics_api_version: api-version=2018-01-01 # Most recent working Azure metrics API version
+metrics_api_version: "api-version=2018-01-01"
+# @var metrics_base_url: https://management.azure.com # Beginning of URL used for metrics collection
+metrics_base_url: "https://management.azure.com"
+# @var metrics_endpoint_url: providers/microsoft.insights/metrics # Endpoint of URL for metrics collection
+metrics_endpoint_url: "providers/microsoft.insights/metrics"
+# @var metrics_period_start # Indicates start of metrics collection period (if not provided during benchamrk, defaults to now(UTC=True) )
+metrics_period_start: "{{ benchmark_start | default( now(utc=True).isoformat() ) }}"
+# @var metrics_period_end # Indicates start of metrics collection period (if not provided during benchamrk, defaults to now() )
+metrics_period_end: "{{ benchmark_end | default( now().isoformat() ) }}"
+# @var collect_metrics_missing_vars # Indicate if all variables are defined
+collect_metrics_missing_vars: false

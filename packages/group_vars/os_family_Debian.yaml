@@ -1,0 +1,41 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+hammerdb_urls:
+  "3.2": "https://github.com/TPC-Council/HammerDB/releases/download/v3.2/HammerDB-3.2-Linux.tar.gz"
+  "3.3": "https://github.com/TPC-Council/HammerDB/releases/download/v3.3/HammerDB-3.3-Linux.tar.gz"
+  "4.0": "https://github.com/TPC-Council/HammerDB/releases/download/v4.0/HammerDB-4.0-Linux.tar.gz"
+  "4.2": "https://github.com/TPC-Council/HammerDB/releases/download/v4.2/HammerDB-4.2-Linux.tar.gz"
+
+# Same repo for mysql distribution
+# install 5 version sudo apt install -f mysql-client=5.7* mysql-community-server=5.7* mysql-server=5.7*
+# look for version  sudo apt-cache policy mysql-server
+mysql_pkg:
+  "5.0": "https://dev.mysql.com/get/mysql-apt-config_0.8.20-1_all.deb"
+  "8.0.22": "https://dev.mysql.com/get/mysql-apt-config_0.8.20-1_all.deb"
+
+common_dependencies:
+  - wget
+  - python3-pip
+  - python3-setuptools
+  - python3-virtualenv
+
+mysql_server_dependencies:
+  - mysql-server
+  - mysql-common
+  - policycoreutils-python-utils
+  - mysql-client
+
+mysql_client_dependencies:
+  - mysql-client
+
+update_cache: true
+mysql_service: mysql
+mysql_password_args: "-S {{ login_unix_socket }}"
+login_unix_socket: "/var/run/mysqld/mysqld.sock"
+mysql_config_path: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+mysql_log_path: "/var/log/mysql/mysqld.log"

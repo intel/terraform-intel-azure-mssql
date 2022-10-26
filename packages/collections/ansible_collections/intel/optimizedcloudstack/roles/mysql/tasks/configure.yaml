@@ -1,0 +1,241 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Set MySQL root password if provided by user
+  ansible.builtin.set_fact:
+    mysql_root_pass: "{{ mysql.root_pass }}"
+
+- name: Set MySQL hammerdb database password if provided by user
+  ansible.builtin.set_fact:
+    mysql_hammerdb_pass: "{{ mysql.hammerdb_pass }}"
+
+- name: Generate MySQL root password
+  ansible.builtin.set_fact:
+    mysql_root_pass: "{{ lookup('password', '/dev/null length=16') }}1#"
+  when: mysql.root_pass | length == 0
+
+- name: Generate MySQL hammerdb database password
+  ansible.builtin.set_fact:
+    mysql_hammerdb_pass: "{{ lookup('password', '/dev/null length=16') }}1#"
+  when: mysql.hammerdb_pass | length == 0
+
+- name: Show generated mysql root password
+  ansible.builtin.debug:
+    msg: "{{ mysql_root_pass }}"
+  when: mysql.root_pass | length == 0
+
+- name: Show generated mysql hammerdb database password
+  ansible.builtin.debug:
+    msg: "{{ mysql_hammerdb_pass }}"
+  when: mysql.hammerdb_pass | length == 0
+
+- name: Modify memlock, both soft and hard, limit for mysql
+  ansible.builtin.pam_limits:
+    domain: mysql
+    limit_type: "-"
+    limit_item: memlock
+    value: unlimited
+  become: true
+
+- name: Configure MySQL server
+  ansible.builtin.template:
+    mode: "0755"
+    src: my.cnf.j2
+    dest: "{{ mysql_config_path }}"
+  notify:
+    - Restart MySQL server
+  become: true
+
+- name: Validate MySQL configuration file
+  ansible.builtin.command: "mysqld --validate-config"
+  changed_when: false
+
+- name: Force to flush notified handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure MySQL server is started
+  ansible.builtin.service:
+    name: "{{ mysql_service }}"
+    enabled: true
+    state: started
+  become: true
+
+- name: Check if root client configuration exists
+  ansible.builtin.stat:
+    path: /root/.my.cnf
+  register: p
+  become: true
+
+- name: Find temporary password
+  ansible.builtin.shell: "set -o pipefail && echo `grep 'temporary.*root@localhost' /var/log/mysqld.log | sed 's/.*root@localhost: //' | tail -1`"
+  args:
+    executable: /bin/bash
+  register: mysql_root_password_temp
+  when:
+    - p.stat.isreg is not defined
+    - ansible_os_family == "RedHat"
+  become: true
+
+- name: Set new password from temporary password
+  ansible.builtin.command: >
+    mysql -uroot
+    {{ mysql_password_args }}
+    --connect-expired-password mysql
+    -e "ALTER USER root@localhost IDENTIFIED BY {{ mysql_root_pass | quote }};"
+  when: p.stat.isreg is not defined
+  become: true
+
+- name: Configure root account
+  ansible.builtin.template:
+    mode: "0755"
+    src: root.my.cnf.j2
+    dest: /root/.my.cnf
+  when: p.stat.isreg is not defined
+  become: true
+
+- name: Create MySQL database hammerdb
+  mysql_db:
+    name: hammerdb
+    encoding: utf8
+    login_unix_socket: "{{ login_unix_socket | default(omit) }}"
+    state: present
+  become: true
+
+- name: Create MySQL database user hammerdb
+  mysql_user:
+    name: hammerdb
+    host: "%"
+    password: "{{ mysql_hammerdb_pass }}"
+    login_unix_socket: "{{ login_unix_socket | default(omit) }}"
+    priv: "hammerdb.*:ALL"
+    state: present
+  become: true
+
+- name: Assign huge pages
+  ansible.builtin.shell: "set -o pipefail && /sbin/sysctl -n vm.nr_hugepages > {{ num_of_huge_pages }}"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  when: huge_pages == "yes"
+  become: true
+
+- name: Get hugepage size in kB
+  ansible.builtin.shell: "set -o pipefail && cat /proc/meminfo | grep Hugepagesize | awk -F' ' '{print $2}'"
+  args:
+    executable: /bin/bash
+  register: hugepagesz_KB
+  changed_when: false
+  when: huge_pages == "yes"
+
+- name: Get available memory size in kB
+  ansible.builtin.shell: " set -o pipefail && cat /proc/meminfo | grep MemAvailable | awk -F' ' '{print $2}'"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: mem_available_KB
+
+- name: Set innodb_buffer_pool_size for case when huge pages are set off and memory is not sufficient
+  ansible.builtin.set_fact:
+    innodb_buffer_pool_size_KB: "{{ 0.75 * mem_available_KB.stdout |int|abs }}"
+  when: mem_available_KB.stdout |int|abs < 75000000 and huge_pages == "no"
+
+- name: Set innodb_buffer_pool_size for case when huge pages are set off and memory is sufficient
+  ansible.builtin.set_fact:
+    innodb_buffer_pool_size_KB: 67108864
+  when: mem_available_KB.stdout |int|abs >= 75000000 and huge_pages == "no"
+
+- name: Set new value for huge pages and innodb if sufficient memory
+  ansible.builtin.set_fact:
+    numOfHugePages: 35000
+    innodb_buffer_pool_size_KB: 67108864
+  when: mem_available_KB.stdout |int|abs >= 75000000 and huge_pages == "yes"
+
+- name: Set new value for totalMemForHugePages_KB if sufficient memory
+  ansible.builtin.set_fact:
+    totalMemForHugePages_KB: "{{ numOfHugePages * mem_available_KB.stdout |int|abs }}"
+  when: mem_available_KB.stdout |int|abs >= 75000000 and huge_pages == "yes"
+
+- name: Set new value for totalMemForHugePages_KB and innodb if not sufficient memory
+  ansible.builtin.set_fact:
+    totalMemForHugePages_KB: "{{ 0.75 * mem_available_KB.stdout |int|abs }}"
+  when: mem_available_KB.stdout |int|abs < 75000000 and huge_pages == "yes"
+
+- name: Set new value for numOfHugePages if not sufficient memory
+  ansible.builtin.set_fact:
+    innodb_buffer_pool_size_KB: "{{ totalMemForHugePages_KB }}"
+    numOfHugePages: "{{ totalMemForHugePages_KB |int|abs / hugepagesz_KB.stdout |int|abs }}"
+  when: mem_available_KB.stdout |int|abs < 75000000 and huge_pages == "yes"
+
+- name: Calculate number of normal pages and innodb largest block size
+  ansible.builtin.set_fact:
+    numOfNormalPages: "{{ innodb_buffer_pool_size_KB |int|abs / 4 |int|abs }}"
+    innodbLargestBlockSize: "{{ (innodb_buffer_pool_size_KB |int|abs * 1024) / mysql_conf.innodb_buffer_pool_instances |int|abs }}"
+  when: huge_pages == "yes"
+
+- name: Get group id of mysql
+  ansible.builtin.shell: "set -o pipefail && id mysql | awk -F' ' '{print $2}'"
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: mysql_id
+  when: huge_pages == "yes"
+
+- name: Extract group id of mysql
+  ansible.builtin.set_fact:
+    mysql_id_nr: "{{ mysql_id.stdout | regex_search('([0-9]+)') }}"
+  when: huge_pages == "yes"
+
+- name: Update sysctl config with mysql group id
+  sysctl:
+    name: vm.hugetlb_shm_group
+    value: "{{ mysql_id_nr }}"
+    state: present
+  when: huge_pages == "yes"
+  become: true
+
+- name: Update sysctl config with innodbLargestBlockSize
+  sysctl:
+    name: kernel.shmmax
+    value: "{{ innodbLargestBlockSize |int|abs }}"
+    state: present
+  when: huge_pages == "yes"
+  become: true
+
+- name: Update sysctl config with numOfNormalPages
+  sysctl:
+    name: kernel.shmall
+    value: "{{ numOfNormalPages |int|abs }}"
+    state: present
+    reload: true
+  when: huge_pages == "yes"
+  become: true
+
+- name: Update hugepages number in sysctl
+  sysctl:
+    name: vm.nr_hugepages
+    value: "{{ numOfHugePages |int|abs }}"
+    state: present
+    sysctl_set: true
+  when: huge_pages == "yes"
+  become: true
+
+- name: Update innodb_buffer_pool_size
+  ansible.builtin.set_fact:
+    innodb_buffer_pool_size_B: "{{ innodb_buffer_pool_size_KB |int|abs * 1024 |int|abs }}"
+
+- name: Change innodb_buffer_pool_size
+  ansible.builtin.replace:
+    path: "{{ mysql_config_path }}"
+    regexp: "(?<=innodb_buffer_pool_size=).*$"
+    replace: "{{ innodb_buffer_pool_size_B }}"
+  become: true
+
+- name: Restart MySQL server
+  ansible.builtin.service:
+    name: "{{ mysql_service }}"
+    state: restarted
+  become: true

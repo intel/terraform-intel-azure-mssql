@@ -1,0 +1,29 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+ansible_winrm_server_cert_validation: ignore
+ansible_winrm_transport: basic
+ansible_winrm_port: 5985
+
+vm_mssql_host_temp_path: 'C:\temp\'
+vm_mssql_host_backup_path: 'F:\SQLBackups'
+
+windows_odbc_driver: "{ODBC Driver 17 for SQL Server}"
+linux_odbc_driver: "{ODBC Driver 17 for SQL Server}"
+
+hammerdb:
+  test_dir: 'C:\Users\testadmin\AppData\Local\Temp'
+  sqlcmd_path: 'C:\"Program Files"\"Microsoft SQL Server"\"Client SDK"\ODBC\170\Tools\Binn\SQLCMD.EXE'
+  unpack_archive_path: C:\Program Files\
+
+mssql:
+  port: 1433
+  username: testadmin
+  password: "{{ database_password }}"
+
+IPv4_REGEX: "(?:(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])(\\.(?!$)|$)){4}$"
+mssql_listening_ip: "{{ hostvars['vm-database'].ansible_ip_addresses | map('regex_search',IPv4_REGEX) | select('string') | list | first }}"

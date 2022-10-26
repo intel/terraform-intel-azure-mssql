@@ -1,0 +1,34 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Classify hosts depending on their OS family
+  ansible.builtin.group_by:
+    key: "os_family_{{ ansible_facts['os_family'] }}"
+
+- name: Classify hosts depending on their OS distribution
+  ansible.builtin.group_by:
+    key: "os_distribution_{{ ansible_facts['distribution'] }}"
+
+- name: Launch OracleLinux-specific preconfiguration scripts
+  include_tasks: "{{ ansible_facts['distribution'] }}/prepare_os_disk.yaml"
+  when: ansible_facts['distribution'] == "OracleLinux"
+
+- name: Launch provider-specific preconfiguration scripts
+  include_tasks: "{{ provider }}/collect_log_disk_info.yaml"
+
+- name: Collect information about disks
+  import_tasks: collect_disks_info.yaml
+
+- name: Setup disks
+  include_tasks: setup_disks.yaml
+  loop: "{{ list_of_disks }}"
+  loop_control:
+    label: "{{ disk.mountpoint }}"
+    loop_var: disk
+
+- name: Update host facts about disks
+  ansible.builtin.setup:

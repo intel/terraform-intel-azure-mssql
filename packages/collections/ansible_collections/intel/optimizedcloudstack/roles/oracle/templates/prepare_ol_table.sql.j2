@@ -1,0 +1,1 @@
+CREATE BIGFILE TABLESPACE {{ hammerdb.ol_tablespace }} DATAFILE '{{ oracle_mount_dir }}/{{ oracle.service_name }}/hammerdbol_data.dbf' SIZE {{ oracle_conf.db_size }} BLOCKSIZE 16k EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO;

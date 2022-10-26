@@ -1,0 +1,37 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+hammerdb_urls:
+  "3.2": "https://github.com/TPC-Council/HammerDB/releases/download/v3.2/HammerDB-3.2-Linux.tar.gz"
+  "3.3": "https://github.com/TPC-Council/HammerDB/releases/download/v3.3/HammerDB-3.3-Linux.tar.gz"
+  "4.0": "https://github.com/TPC-Council/HammerDB/releases/download/v4.0/HammerDB-4.0-Linux.tar.gz"
+  "4.2": "https://github.com/TPC-Council/HammerDB/releases/download/v4.2/HammerDB-4.2-Linux.tar.gz"
+
+mysql_pkg:
+  "5.0": "https://repo.mysql.com/mysql57-community-release-el7.rpm"
+  "8.0.22": "https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm"
+
+mysql_log_path: "/var/log/mysqld.log"
+
+mysql_server_dependencies:
+  - "mysql-community-server-{{ mysql_version }}-1.el8"
+  - "mysql-community-client-{{ mysql_version }}-1.el8"
+  - "mysql-community-common-{{ mysql_version }}-1.el8"
+  - "mysql-community-libs-{{ mysql_version }}-1.el8"
+  - policycoreutils-python-utils
+
+mysql_server_additional_dependencies:
+  - "mysql-community-client-plugins-{{ mysql_version }}-1.el8"
+
+mysql_client_dependencies:
+  - "mysql-community-common-{{ mysql_version }}-1.el8"
+  - "mysql-community-client-{{ mysql_version }}-1.el8"
+
+lock_timeout: 180
+mysql_service: mysqld
+mysql_password_args: "-p''{{ mysql_root_password_temp.stdout }}''"
+mysql_config_path: "/etc/my.cnf"

@@ -1,0 +1,13 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# Here because it is used in both HammerDB and MSSQL server roles
+hammerdb_bin_dir: 'C:\Program Files\HammerDB-{{ hammerdb_version }}'
+
+hammerdb_urls:
+  "4.0": "https://github.com/TPC-Council/HammerDB/releases/download/v4.0/HammerDB-4.0-Win.zip"
+  "4.2": "https://github.com/TPC-Council/HammerDB/releases/download/v4.2/HammerDB-4.2-Win.zip"

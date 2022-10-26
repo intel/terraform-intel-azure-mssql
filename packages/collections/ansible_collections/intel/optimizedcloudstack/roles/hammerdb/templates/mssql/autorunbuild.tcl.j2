@@ -1,0 +1,21 @@
+#!/usr/bin/tclsh8.6
+puts "SETTING CONFIGURATION"
+global complete
+proc wait_to_complete {} {
+global complete
+set complete [vucomplete]
+if {!$complete} { after 5000 wait_to_complete } else { exit }
+}
+puts "SETTING CONFIGURATION"
+dbset db mssqls
+diset connection mssqls_server {{ mssql_listening_ip }}
+diset connection mssqls_port {{ mssql.port }}
+dict set configmssqlserver connection mssqls_odbc_driver {{ windows_odbc_driver }}
+diset tpcc mssqls_driver timed
+diset tpcc mssqls_dbase {{ database_name }}
+diset tpcc mssqls_count_ware {{ warehouses }}
+diset tpcc mssqls_num_vu {{ v_users }}
+vuset logtotemp 1
+buildschema
+wait_to_complete
+vwait forever

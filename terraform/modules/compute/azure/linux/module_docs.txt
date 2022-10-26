@@ -1,0 +1,38 @@
+
+
+input.azure_env_params (required)
+Plugin for cloud-env outputs.
+
+input.name (required)
+VM name.
+
+input.nic_name (required)
+Network Interface to attach.
+
+input.os_name (required)
+Name of OS that will be used. For now only "CentOS" is supported.
+
+input.size (required)
+VM instance size.
+
+input.tags (required)
+Tags which will be applied to VM-related resources.
+
+input.admin_username ("adminuser")
+Username which will be used for administrator account. Defaults to "adminuser".
+
+input.custom_data (null)
+Cloud-config data encoded as base64.
+
+input.os_disk_size_gb (null)
+(Optional) Size of OS disk. If left unset, defaults to OS image size.
+
+input.os_disk_type ("Standard")
+(Optional) Type of OS disk. If left unset, defaults "Standard" disk type.
+
+
+output.vm
+VM object created by this module.
+
+output.vm_info
+Object which contains additional information about VM.

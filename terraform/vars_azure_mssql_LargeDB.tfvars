@@ -1,0 +1,9 @@
+resourcegroup           = "IOCS-LargeDB-Scenario-MSSQL"
+server_instancetype     = "Standard_E64ds_v4"
+custom_profile          = "azure_mssql_LargeDB"
+database_name           = "tpcc_800WH"
+spawn_disks             = true
+server_disks_wal_size   = 1024
+server_disks_data_size  = 32767
+server_disks_data_disks = 4
+server_os_disksize      = 1024

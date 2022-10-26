@@ -1,0 +1,31 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+# @tag export # This tag indicates tasks that are related to image exporting to local cloud galleries in supported workloads.
+# @tag destroy # This tag indicates tasks that destroy the infrastructure after exporting tasks, which leave infrastructure unsuitable for destruction using Terraform.
+---
+- name: Validation variables (validation.yaml)
+  import_tasks: validation.yaml
+  tags:
+    - always
+  when:
+    - export_image_mandatory_vars is defined
+    - export_image_mandatory_vars | length > 0
+
+- name: Authentication check (auth.yaml)
+  import_tasks: auth.yaml
+  tags:
+    - always
+
+- name: Export image to CSP (export.yaml)
+  import_tasks: export.yaml
+  tags:
+    - export
+
+- name: Destroy resources (destroy.yaml)
+  import_tasks: destroy.yaml
+  tags:
+    - destroy

@@ -1,0 +1,114 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# @var hammerdb_urls: [MYSQL] # Dict with HammerDB zip URLs for each os, loaded from group_vars/os_<used os>.yaml
+# hammerdb_urls:
+
+# @var mysql_hammerdb: [MYSQL] # Dict with URLs to different archives of HammerDB
+mysql_hammerdb:
+  install_path_prefix: "/opt"
+
+# @var mysql: [MYSQL] # Dict with MySQL & HammerDB passwords and default installation dirs
+mysql:
+  root_pass: "{{ lookup('env', 'MYSQL_ROOT_PASSWORD') | default('' , True) }}"
+  hammerdb_pass: "{{ lookup('env', 'MYSQL_HAMMERDB_PASSWORD') | default('', True) }}"
+  default_mount_dir: "/var/lib"
+  default_dir: "/var/lib/mysql"
+
+# @var mysql_conf: [MYSQL] # Dict with InnoDB (storage engine) variables used to configure MySQL databsase
+mysql_conf:
+  innodb_log_file_size: "{{ lookup('env', 'MYSQL_LOG_FILE_SIZE') | default('1024M', True) }}"
+  innodb_buffer_pool_size: "{{ lookup('env', 'MYSQL_INNODB_BUFFER_POOL_SIZE') | default('67108864', True) }}"
+  innodb_buffer_pool_instances: "{{ lookup('env', 'MYSQL_INNODB_BUFFER_POOL_INSTANCES') | default('16', True) }}"
+  innodb_log_buffer_size: "{{ lookup('env', 'MYSQL_INNODB_LOG_BUFFER_SIZE') | default('64M', True) }}"
+  innodb_doublewrite: "{{ lookup('env', 'MYSQL_INNODB_DOUBLEWRITE') | default('0', True) }}"
+  innodb_thread_concurrency: "{{ lookup('env', 'MYSQL_INNODB_THREAD_CONCURRENCY') | default('0', True) }}"
+  innodb_flush_log_at_trx_commit: "{{ lookup('env', 'MYSQL_INNODB_FLUSH_LOG_AT_TRX_COMMIT') | default('0', True) }}"
+  innodb_max_dirty_pages_pct: "{{ lookup('env', 'MYSQL_INNODB_MAX_DIRTY_PAGES_PCT') | default('90', True) }}"
+  innodb_max_dirty_pages_pct_lwm: "{{ lookup('env', 'MYSQL_INNODB_MAX_DIRTY_PAGES_PCT_LWM') | default('10', True) }}"
+  join_buffer_size: "{{ lookup('env', 'MYSQL_JOIN_BUFFER_SIZE') | default('32K', True) }}"
+  sort_buffer_size: "{{ lookup('env', 'MYSQL_SORT_BUFFER_SIZE') | default('32K', True) }}"
+  innodb_use_native_aio: "{{ lookup('env', 'MYSQL_INNODB_USE_NATIVE_AIO') | default('1', True) }}"
+  innodb_stats_persistent: "{{ lookup('env', 'MYSQL_INNODB_STATS_PERSISTENT') | default('1', True) }}"
+  innodb_spin_wait_delay: "{{ lookup('env', 'MYSQL_INNODB_SPIN_WAIT_DELAY') | default('6', True) }}"
+  innodb_max_purge_lag_delay: "{{ lookup('env', 'MYSQL_INNODB_MAX_PURGE_LAG_DELAY') | default('300000', True) }}"
+  innodb_max_purge_lag: "{{ lookup('env', 'MYSQL_INNODB_MAX_PURGE_LAG') | default('0', True) }}"
+  innodb_flush_method: "{{ lookup('env', 'MYSQL_INNODB_FLUSH_METHOD') | default('O_DIRECT_NO_FSYNC', True) }}"
+  innodb_checksum_algorithm: "{{ lookup('env', 'MYSQL_INNODB_CHECKSUM_ALGORITHM') | default('none', True) }}"
+  innodb_io_capacity: "{{ lookup('env', 'MYSQL_INNODB_IO_CAPACITY') | default('4000', True) }}"
+  innodb_io_capacity_max: "{{ lookup('env', 'MYSQL_INNODB_IO_CAPACITY_MAX') | default('20000', True) }}"
+  innodb_lru_scan_depth: "{{ lookup('env', 'MYSQL_INNODB_LRU_SCAN_DEPTH') | default('9000', True) }}"
+  innodb_change_buffering: "{{ lookup('env', 'MYSQL_INNODB_CHANGE_BUFFERING') | default('none', True) }}"
+  innodb_read_only: "{{ lookup('env', 'MYSQL_INNODB_READ_ONLY') | default('0', True) }}"
+  innodb_page_cleaners: "{{ lookup('env', 'MYSQL_INNODB_PAGE_CLEANERS') | default('4', True) }}"
+  innodb_undo_log_truncate: "{{ lookup('env', 'MYSQL_INNODB_UNDO_LOG_TRUNCATE') | default('off', True) }}"
+  innodb_adaptive_flushing: "{{ lookup('env', 'MYSQL_INNODB_ADAPTIVE_FLUSHING') | default('1', True) }}"
+  innodb_flush_neighbors: "{{ lookup('env', 'MYSQL_INNODB_FLUSH_NEIGHBORS') | default('0', True) }}"
+  innodb_read_io_threads: "{{ lookup('env', 'MYSQL_INNODB_READ_IO_THREADS') | default('16', True) }}"
+  innodb_write_io_threads: "{{ lookup('env', 'MYSQL_INNODB_WRITE_IO_THREADS') | default('16', True) }}"
+  innodb_purge_threads: "{{ lookup('env', 'MYSQL_INNODB_PURGE_THREADS') | default('4', True) }}"
+  innodb_adaptive_hash_index: "{{ lookup('env', 'MYSQL_INNODB_ADAPTIVE_HASH_INDEX') | default('0', True) }}"
+
+# @var python_rhel_dependencies: [MYSQL] # List of Python dependencies to install
+python_rhel_dependencies:
+  - policycoreutils-python-utils
+
+# @var mysql_server_dependencies: [MYSQL] # List of MySQL dependencies to install
+mysql_server_dependencies:
+  - "mysql-community-server-{{ mysql_version }}-1.el8"
+  - "mysql-community-client-{{ mysql_version }}-1.el8"
+  - "mysql-community-common-{{ mysql_version }}-1.el8"
+  - "mysql-community-libs-{{ mysql_version }}-1.el8"
+
+# @var mysql_server_additional_dependencies: [MYSQL] # List of additional MySQL dependencies to install (plugins)
+# mysql_server_additional_dependencies:
+#   - "mysql-community-client-plugins-{{ mysql_version }}-1.el8"
+
+# @var mysql_mount_dir: "/var/lib" # Define directory where mysql will store data. Very important if using additional drives. Should be change to /mnt/mysqldata in this case (Also required changes in prepare stage!). Can be overriden from launcher in perform stage.
+mysql_mount_dir: /var/lib
+
+# @var mysql_dir: "{{ mysql_mount_dir }}/mysql" # Define mysql directory. Set automatically during role run.
+mysql_dir: "/var/lib/mysql"
+
+# @var mysql_version: 8.0.22 [MYSQL] # Version of MySQL database. Can be overriden from launcher in perform stage
+mysql_version: "8.0.22"
+
+# @var mysql_hammerdb_pass: "" [MYSQL] # Auto generated during role run. Check log for task "Show generated mysql hammerdb database password".
+mysql_hammerdb_pass: ""
+
+# @var mysql_hammerdb_pass: "" [MYSQL] # Auto generated during role run. Check log for task "Show generated mysql root password".
+mysql_root_pass: ""
+
+# @var huge_pages: "yes" [MYSQL] # If yes MySQL database will use huge pages settings. Increase performance. Sizes are automatically calculated during run. Values: "yes|no" Can be overriden from launcher in perform stage.
+huge_pages: "yes"
+# @var numOfHugePages: [MYSQL] # calculated during perform phase, depends from available memory
+# numOfHugePages: ""
+
+# @var innodb_buffer_pool_size_KB: [MYSQL] # extracted from database settings. Used in internal optimilization
+# innodb_buffer_pool_size_KB: ""
+
+# @var totalMemForHugePages_KB: [MYSQL] # calculated during perform phase, depends from available memory
+# totalMemForHugePages_KB: ""
+
+# @var numOfNormalpages: [MYSQL] # calculated during perform phase, depends from available memory
+# numOfNormalpages: ""
+
+# @var innodbLargestBlockSize: [MYSQL] # calculated during perform phase, depends from available memory
+# innodbLargestBlockSize: ""
+
+# @var innodb_buffer_pool_size_B: [MYSQL] # calculated during perform phase, depends from available memory
+# innodb_buffer_pool_size_B: ""
+
+# @var lock_default: "" # Amount of time to wait for the yum lockfile to be freed. (RedHat Only)
+# lock_default: ""
+# @var update_cache: # Update package manager cache before installing package
+# update_cache: true/false
+
+# @var mysql_password_args: # Add arguments for mysql password change like socket or temporary password
+mysql_password_args: ""
+# @var login_unix_socket: # login socket use during mysql operations
+# login_unix_socket:

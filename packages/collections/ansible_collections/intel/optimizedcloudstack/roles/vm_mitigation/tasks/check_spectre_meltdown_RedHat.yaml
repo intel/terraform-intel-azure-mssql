@@ -1,0 +1,54 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Get latest version of spectre-meltdown checker script
+  ansible.builtin.get_url:
+    url: https://meltdown.ovh
+    dest: /tmp/spectre-meltdown-checker.sh
+    mode: a+x
+
+- name: Install perl
+  register: result
+  until: result is success
+  retries: 100
+  delay: 30
+  ansible.builtin.package:
+    name: perl
+    lock_timeout: 180
+  become: true
+
+- name: Run spectre-meltdown checker script
+  ansible.builtin.command: /tmp/spectre-meltdown-checker.sh
+  become: true
+  changed_when: true
+  register: mitigation_output
+  failed_when: false
+
+- name: Clean mitigation output from artifacts
+  ansible.builtin.set_fact:
+    mitigation_output_cleaned: "{{ mitigation_output.stdout | regex_replace('(\x1B?[[0-9]+m)+') }}"
+
+- name: Save mitigation output to file
+  ansible.builtin.copy:
+    mode: "0755"
+    content: "{{ mitigation_output_cleaned }}"
+    dest: /tmp/mitigation.log
+
+- name: Fetch results to localhost
+  ansible.builtin.fetch:
+    src: /tmp/mitigation.log
+    dest: "{{ mitigation_dir }}/mitigation.log"
+
+- name: Cleanup spectre-meltdown checker script
+  ansible.builtin.file:
+    path: /tmp/spectre-meltdown-checker.sh
+    state: absent
+
+- name: Cleanup spectre-meltdown checker results
+  ansible.builtin.file:
+    path: /tmp/mitigation.log
+    state: absent

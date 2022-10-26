@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mysql>
+    <connection>
+        <mysql_host>{{ mysql_listening_ip }}</mysql_host>
+        <mysql_port>3306</mysql_port>
+        <mysql_socket>/tmp/mysql.sock</mysql_socket>
+    </connection>
+        <tpcc>
+        <schema>
+            <mysql_count_ware>{{ warehouses }}</mysql_count_ware>
+            <mysql_num_vu>{{ v_users }}</mysql_num_vu>
+            <mysql_user>hammerdb</mysql_user>
+            <mysql_pass>{{ hostvars[groups['sut'][0]]['mysql_hammerdb_pass'] }}</mysql_pass>
+            <mysql_dbase>hammerdb</mysql_dbase>
+            <mysql_storage_engine>innodb</mysql_storage_engine>
+            <mysql_partition>false</mysql_partition>
+            <mysql_prepared>false</mysql_prepared>
+        </schema>
+        <driver>
+            <mysql_total_iterations>1000000</mysql_total_iterations>
+            <mysql_raiseerror>false</mysql_raiseerror>
+            <mysql_keyandthink>false</mysql_keyandthink>
+            <mysql_driver>test</mysql_driver>
+            <mysql_rampup>{{ rampup_duration }}</mysql_rampup>
+            <mysql_duration>{{ test_duration }}</mysql_duration>
+            <mysql_allwarehouse>false</mysql_allwarehouse>
+            <mysql_timeprofile>false</mysql_timeprofile>
+            <mysql_async_scale>false</mysql_async_scale>
+            <mysql_async_client>10</mysql_async_client>
+            <mysql_async_verbose>false</mysql_async_verbose>
+            <mysql_async_delay>1000</mysql_async_delay>
+            <mysql_connect_pool>false</mysql_connect_pool>
+        </driver>
+    </tpcc>
+    <tpch>
+        <schema>
+            <mysql_scale_fact>1</mysql_scale_fact>
+            <mysql_tpch_user>hammerdb</mysql_tpch_user>
+            <mysql_tpch_pass>{{ hostvars[groups['sut'][0]]['mysql_hammerdb_pass'] }}</mysql_tpch_pass>
+            <mysql_tpch_dbase>hammerdb</mysql_tpch_dbase>
+            <mysql_num_tpch_threads>1</mysql_num_tpch_threads>
+            <mysql_tpch_storage_engine>myisam</mysql_tpch_storage_engine>
+        </schema>
+        <driver>
+            <mysql_total_querysets>1</mysql_total_querysets>
+            <mysql_raise_query_error>false</mysql_raise_query_error>
+            <mysql_verbose>false</mysql_verbose>
+            <mysql_refresh_on>false</mysql_refresh_on>
+            <mysql_update_sets>1</mysql_update_sets>
+            <mysql_trickle_refresh>1000</mysql_trickle_refresh>
+            <mysql_refresh_verbose>false</mysql_refresh_verbose>
+            <mysql_cloud_query>false</mysql_cloud_query>
+        </driver>
+    </tpch>
+</mysql>

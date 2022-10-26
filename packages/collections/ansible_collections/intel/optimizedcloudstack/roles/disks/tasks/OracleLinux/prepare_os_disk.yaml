@@ -1,0 +1,39 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Install packages required for disks partition extending
+  register: result
+  until: result is success
+  retries: 5
+  delay: 30
+  ansible.builtin.package:
+    name: "{{ disk_dependencies }}"
+    lock_timeout: "{{ lock_timeout | default(omit) }}"
+    update_cache: "{{ update_cache | default(omit) }}"
+    state: present
+  become: true
+
+- name: Get OS disk device and its partition to extend
+  ansible.builtin.set_fact:
+    os_disk_device: "{{ item.device }}"
+    os_disk_partition_number: "{{ item.device | regex_search('[0-9]+') }}"
+  when: item.mount == "/"
+  loop: "{{ ansible_facts['mounts'] | flatten(1) }}"
+
+- name: Extend OS disk root partition
+  ansible.builtin.command: growpart {{ os_disk_device[:-(os_disk_partition_number | length)] }} {{ os_disk_partition_number }}
+  changed_when: false
+  register: result
+  failed_when:
+    "(result.rc != 0 and 'it cannot be grown' not in result.stdout) or
+    (result.rc != 1 and 'it cannot be grown' in result.stdout)"
+  become: true
+
+- name: Resize root file system
+  ansible.builtin.command: btrfs filesystem resize max /
+  changed_when: true
+  become: true

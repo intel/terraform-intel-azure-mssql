@@ -1,0 +1,65 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Classify hosts depending on their OS family
+  ansible.builtin.group_by:
+    key: "os_family_{{ ansible_facts['os_family'] }}"
+
+- name: Classify hosts depending on their OS distribution
+  ansible.builtin.group_by:
+    key: "os_distribution_{{ ansible_facts['distribution'] }}"
+
+- name: Set version of hammerdb
+  ansible.builtin.set_fact:
+    hammerdb_archive_url: "{{ hammerdb_urls[hammerdb_version] }}"
+    hammerdb_install_path: "/opt/HammerDB-{{ hammerdb_version }}"
+
+- name: Clear hammerdb logs for {{ item }}
+  ansible.builtin.file:
+    path: /tmp/hammerdb.log
+    state: absent
+  become: true
+
+- name: Prepare simple experiment definition
+  ansible.builtin.template:
+    mode: "0755"
+    src: oracle/oraclerun.tcl.j2
+    dest: "{{ hammerdb_install_path }}/oraclerun.tcl"
+  become: true
+
+- name: Run hammerdb benchmark for {{ item }}
+  ansible.builtin.command: bash -ilc "{{ hammerdb_install_path }}/hammerdbcli auto {{ hammerdb_install_path }}/oraclerun.tcl"
+  args:
+    chdir: "{{ hammerdb_install_path }}"
+  changed_when: true
+  become: true
+  become_user: oracle
+  async: 86400
+  poll: 15
+
+- name: Get start snapshot ID
+  ansible.builtin.shell: "set -o pipefail && grep 'Start Snapshot' '/tmp/hammerdb.log' | awk '{print $4}'"
+  register: start_snapshot
+  changed_when: false
+  failed_when: start_snapshot.rc != 0
+
+- name: Get end snapshot ID
+  ansible.builtin.shell: "set -o pipefail && grep 'End Snapshot' '/tmp/hammerdb.log' | awk '{print $4}'"
+  register: end_snapshot
+  changed_when: false
+  failed_when: end_snapshot.rc != 0
+
+- name: Set snapshot IDs
+  ansible.builtin.set_fact:
+    awr_begin_snap: "{{ start_snapshot.stdout }}"
+    awr_end_snap: "{{ end_snapshot.stdout }}"
+
+- name: Fetch hammerdb log
+  ansible.builtin.fetch:
+    src: "/tmp/hammerdb.log"
+    dest: "{{ results_dir_name }}/hammerdb.log"
+    flat: true

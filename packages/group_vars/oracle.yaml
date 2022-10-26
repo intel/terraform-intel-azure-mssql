@@ -1,0 +1,64 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+hammerdb:
+  install_path_prefix: "/opt"
+  tablespace: hammerdb
+  ol_tablespace: hammerdbol
+  user: hammerdbuser
+  password: "{{ lookup('env', 'ORACLE_HAMMERDB_PASSWORD') | default('', True) }}"
+
+oracle:
+  service_name: ORACLESUT
+  sysuser: system
+  sysuser_password: "{{ lookup('env', 'ORACLE_SYSUSER_PASSWORD') | default('', True) }}"
+  home_path: /home/oracle
+
+awr:
+  num_days: 1
+  report_name: awr_report.txt
+  report_type: text
+
+oracle_listening_ip: "{{ hostvars['vm-database'].ansible_default_ipv4.address | default(hostvars['vm-database'].ansible_all_ipv4_addresses[0]) }}"
+
+# Oracle database parameters
+oracle_conf:
+  sga_target: "{{ (0.75 * ansible_memtotal_mb)|int|abs }}m"
+  pga_aggregate_target: "{{ (0.1 * ansible_memtotal_mb)|int|abs }}m"
+  pga_aggregate_limit: "{{ (0.1 * ansible_memtotal_mb * 2)|int|abs }}m"
+  db_cache_size: "{{ (0.45 * ansible_memtotal_mb)|int|abs }}m"
+  shared_pool_size: "{{ (0.06 * ansible_memtotal_mb)|int|abs }}m"
+  db_size: "{{ warehouses * 100 * 2 }}m" # Value is specified in MB - number of warehouses * size of one warehouse * scaling
+  max_logfile_size: 400 # Value is specified in GB
+  logfile_offset_size: 20 # Value is specified in GB
+  number_of_logfiles: 4
+  undo_db_size: 31g # Value is specified in GB
+  db_writer_processes: "{{ 100 if (ansible_processor_vcpus / 8)|int > 100 else 4 }}"
+
+# Kernel parameters
+sysctl_conf:
+  vm.nr_hugepages: "{{ (0.8 * ansible_memtotal_mb / 2) |int|abs }}"
+  vm.hugetlb_shm_group: 54321
+  kernel.shmall: 173741824
+
+# Ephemeral and data disks configuration
+disks_conf:
+  - filesystem: ext4
+    mountpoint: /mnt/ephemeraldata
+    passno: 0
+    options: "defaults"
+    type: temp_disk
+  - filesystem: xfs
+    mountpoint: /mnt/oracledata
+    passno: 2
+    options: "defaults,nofail,x-systemd.device-timeout=5"
+    type: data_disk
+  - filesystem: xfs
+    mountpoint: /mnt/oraclelogs
+    passno: 2
+    options: "defaults,nofail,x-systemd.device-timeout=5"
+    type: log_disk

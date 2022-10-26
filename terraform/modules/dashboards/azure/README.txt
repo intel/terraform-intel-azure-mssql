@@ -1,0 +1,16 @@
+
+
+input.db_only (required)
+Should the stresser dashboard be created?
+
+input.location (required)
+The region to deploy resources into.
+
+input.resourcegroup (required)
+The resource group to deploy resources into.
+
+input.vm_db (required)
+VM (object) for which the database dashboard should be created
+
+input.vm_stresser (required)
+VM (object) for which the stresser dashboard should be created

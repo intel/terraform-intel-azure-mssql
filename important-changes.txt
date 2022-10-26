@@ -1,0 +1,9 @@
+# Changes
+- Results are now saved in subdirectories of benchmark-results; the subcatalogs are named based on date of benchmark run. This is an important change compared to previous saving directly to benchmark-results.
+- rdp_allowed_ips and ssh_allowed_ips elements now accept all input in x.x.x.x/y CIDR format, it was either “x.x.x.x/y” or “x.x.x.x” (for /32 submask) in Azure workloads before and now all have to conform to “x.x.x.x/y” format.
+# New elements
+- added new “make_key_vault” flag which allows to disable Azure KeyVault or AWS Secrets with public & private keys creation,
+- added new “server_os_name” flag which allows to create Azure MySQL workload using RHEL8.1 and Ubuntu20.04 images – instructions will be possible to find in README.
+- added new “server_os_storagetype” variable to Azure MySQL and Oracle workloads OS disk class – this is helpful when having “spawn_disks” set to “False” and provisioning whole OS deployment on a single OS disk (discouraged and unsupported but possible).
+- Added docs/development.md which summarizes the custom post configuration feature
+- Added docs/AWS_IAM_permissions.md which specifies what kind of IAM permissions the Terraform user needs. Don't run the benchmarking workloads in parallel to production workloads. The easiest (but discouraged) way is to use AdministratorAccess managed policy for TF user, but that is allowed only when using a separate subscription.

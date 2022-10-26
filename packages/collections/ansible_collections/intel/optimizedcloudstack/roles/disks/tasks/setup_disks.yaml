@@ -1,0 +1,56 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Prepare full partition path
+  ansible.builtin.set_fact:
+    partition_path: "{{ disk.device_block }}{{ disk_partition_number }}"
+
+- name: Create disk directory
+  ansible.builtin.file:
+    path: "{{ disk.mountpoint }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Check if disk has partitions
+  parted:
+    device: "{{ disk.device_block }}"
+    state: info
+  register: disk_info
+  become: true
+
+- name: Make primary partition for disk
+  parted:
+    device: "{{ disk.device_block }}"
+    number: "{{ disk_partition_number }}"
+    state: present
+    fs_type: "{{ disk.filesystem }}"
+    label: "{{ disk_label_type }}"
+  when: disk_info.partitions == []
+  become: true
+
+- name: Make file system on block device
+  filesystem:
+    fstype: "{{ disk.filesystem }}"
+    dev: "{{ partition_path }}"
+  become: true
+
+- name: Get UUID of disk device
+  ansible.builtin.command: lsblk {{ partition_path }} -no UUID
+  register: disk_uuid
+  changed_when: false
+  become: true
+
+- name: Mount disk by UUID
+  mount:
+    path: "{{ disk.mountpoint }}"
+    src: "UUID={{ disk_uuid.stdout }}"
+    opts: "{{ disk.options }}"
+    fstype: "{{ disk.filesystem }}"
+    passno: "{{ disk.passno }}"
+    state: mounted
+  become: true

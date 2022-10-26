@@ -1,0 +1,46 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+validation:
+  - variable_name: mysql_version
+    rules:
+      - '"{{ mysql_version }}" in ["8.0.21", "8.0.22", "8.0.23"]'
+  - variable_name: hammerdb_version
+    rules:
+      - '"{{ hammerdb_version }}" in ["3.2", "3.3", "4.0", "4.2"]'
+  - variable_name: mysql_mount_dir
+    rules:
+      - '"{{ mysql_mount_dir }}" is match("^(\/[\w^ ]+)+?$")'
+  - variable_name: huge_pages
+    rules:
+      - '"{{ huge_pages }}" in ["yes", "no"]'
+  - variable_name: warehouses
+    rules:
+      - warehouses | type_debug == "int"
+      - "{{ warehouses }} > 0"
+  - variable_name: v_users
+    rules:
+      - v_users | type_debug == "int"
+      - "{{ v_users }} > 0"
+  - variable_name: num_of_huge_pages
+    rules:
+      - num_of_huge_pages | type_debug == "int"
+      - "{{ num_of_huge_pages }} > 0"
+  - variable_name: rampup_duration
+    rules:
+      - rampup_duration | type_debug == "int"
+      - "{{ rampup_duration }} >= 0"
+  - variable_name: test_duration
+    rules:
+      - test_duration | type_debug == "int"
+      - "{{ test_duration }} > 0"
+  - variable_name: mysql.root_pass
+    rules:
+      - '"{{ mysql.root_pass }}" is match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^(){}\[\]`#:|;_\-\+.,=])[A-Za-z\d@$!%*?&^(){}\[\]`#:|;_\-\+.,=]{8,}$") or "{{ mysql.root_pass }}" == ""'
+  - variable_name: mysql.hammerdb_pass
+    rules:
+      - '"{{ mysql.hammerdb_pass }}" is match("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^(){}\[\]`#:|;_\-\+.,=])[A-Za-z\d@$!%*?&^(){}\[\]`#:|;_\-\+.,=]{8,}$") or "{{ mysql.hammerdb_pass }}" == ""'

@@ -1,0 +1,88 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Get resource data and validate
+  block:
+    - name: Get resource data
+      ansible.builtin.uri:
+        url: "{{ metrics_base_url }}/subscriptions/{{ subscription_id }}/resourceGroups/{{ resourcegroup }}/{{ item.resource_list_url }}?{{ item.api_version }}"
+        method: "{{ item.method }}"
+        headers:
+          Authorization: "Bearer {{ auth_response.json.access_token }}"
+        return_content: true
+        status_code: [200, 202]
+      register: response
+      loop: "{{ metrics_api_parameters | flatten(levels=1) }}"
+      no_log: true
+  rescue:
+    - name: Show error message
+      ansible.builtin.fail:
+        msg: "{{ response.results[0].msg }}. Error description: {{ response.results[0].json.error.message }}"
+
+- name: Extract JSON data
+  ansible.builtin.set_fact:
+    list_of_jsons: "{{ list_of_jsons + [ item.json ] }}"
+  loop: "{{ response.results }}"
+  loop_control:
+    label: "OK"
+  changed_when: false
+
+- name: Extract resources
+  ansible.builtin.set_fact:
+    tmp: "{{ tmp + item.value }}"
+  loop: "{{ list_of_jsons }}"
+  loop_control:
+    label: "OK"
+  changed_when: false
+
+- name: Create resources URLs
+  ansible.builtin.set_fact:
+    resources_urls: "{{ resources_urls + [ item.id ] }}"
+    resources_types: "{{ resources_types + [ item.type ] }}"
+  loop: "{{ tmp }}"
+  loop_control:
+    label: "{{ item.id }}"
+  changed_when: false
+
+- name: Collect metrics and validate
+  block:
+    - name: Collect metrics
+      ansible.builtin.uri:
+        url: "{{ metrics_base_url }}/{{ item.0 }}/{{ metrics_endpoint_url }}?{{ metrics_api_version }}&metricnames={{ metrics_encoded_list[item.1] }}&timespan={{ metrics_period_start }}/{{ metrics_period_end }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ auth_response.json.access_token }}"
+        return_content: true
+        status_code: [200, 202]
+      register: metrics_response
+      loop: "{{ resources_urls|zip(resources_types)|list }}"
+      changed_when: false
+  rescue:
+    - name: Show error message
+      ansible.builtin.fail:
+        msg: "{{ metrics_response.results[0].msg }}"
+
+- name: Extract metrics
+  ansible.builtin.set_fact:
+    metrics_values: "{{ metrics_values + [ item.json ] }}"
+  loop: "{{ metrics_response.results }}"
+  loop_control:
+    label: "OK"
+  changed_when: false
+
+- name: Check if metrics directory exists
+  ansible.builtin.file:
+    path: "{{ metrics_dir }}"
+    state: directory
+    recurse: true
+    mode: "0755"
+
+- name: Save metrics
+  ansible.builtin.template:
+    src: metrics.csv.j2
+    dest: "{{ metrics_dir }}/{{ ansible_date_time.iso8601_basic_short }}.csv"
+    mode: "0644"

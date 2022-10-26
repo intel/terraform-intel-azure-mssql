@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mssqlserver>
+    <connection>
+        <mssqls_server>{{ mssql_listening_ip }}</mssqls_server>
+        <mssqls_linux_server>{{ mssql_listening_ip }}</mssqls_linux_server>
+        <mssqls_tcp>true</mssqls_tcp>
+        <mssqls_port>{{ mssql.port }}</mssqls_port>
+        <mssqls_azure>false</mssqls_azure>
+        <mssqls_authentication>sql</mssqls_authentication>
+        <mssqls_linux_authent>sql</mssqls_linux_authent>
+        <mssqls_odbc_driver>{{ windows_odbc_driver }}</mssqls_odbc_driver>
+        <mssqls_linux_odbc>{{ linux_odbc_driver }}</mssqls_linux_odbc>
+        <mssqls_uid>{{ mssql.username }}</mssqls_uid>
+        <mssqls_pass>{{ mssql.password }}</mssqls_pass>
+    </connection>
+    <tpcc>
+        <schema>
+            <mssqls_count_ware>{{ warehouses }}</mssqls_count_ware>
+            <mssqls_num_vu>{{ v_users }}</mssqls_num_vu>
+            <mssqls_dbase>{{ database_name }}</mssqls_dbase>
+            <mssqls_imdb>false</mssqls_imdb>
+            <mssqls_bucket>1</mssqls_bucket>
+            <mssqls_durability>SCHEMA_AND_DATA</mssqls_durability>
+        </schema>
+        <driver>
+            <mssqls_total_iterations>1000000</mssqls_total_iterations>
+            <mssqls_raiseerror>false</mssqls_raiseerror>
+            <mssqls_keyandthink>false</mssqls_keyandthink>
+            <mssqls_checkpoint>false</mssqls_checkpoint>
+            <mssqls_driver>test</mssqls_driver>
+            <mssqls_rampup>{{ rampup_duration }}</mssqls_rampup>
+            <mssqls_duration>{{ test_duration }}</mssqls_duration>
+            <mssqls_allwarehouse>true</mssqls_allwarehouse>
+            <mssqls_timeprofile>false</mssqls_timeprofile>
+            <mssqls_async_scale>false</mssqls_async_scale>
+            <mssqls_async_client>10</mssqls_async_client>
+            <mssqls_async_verbose>false</mssqls_async_verbose>
+            <mssqls_async_delay>1000</mssqls_async_delay>
+            <mssqls_connect_pool>false</mssqls_connect_pool>
+        </driver>
+    </tpcc>
+</mssqlserver>

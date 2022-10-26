@@ -1,0 +1,10 @@
+
+
+input.azure_env_params (required)
+Plugin for cloud-env outputs.
+
+input.script_definitions (required)
+Dictionary of scripts to run on a specific VM. Each object is made of "command_to_execute" field, "filepath" from where the script can be templated, "template_parameters" which are passed to templatefile function and "vm" on which the script will be applied. "template_parameters" is optional if there is nothing to template in a script file and should be set to "null" then.
+
+input.tags (null)
+Tags to apply to resources. Can be null.

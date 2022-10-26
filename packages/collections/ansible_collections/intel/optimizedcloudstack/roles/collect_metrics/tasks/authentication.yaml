@@ -1,0 +1,28 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Authenticate with Azure
+  block:
+    - name: Authenticate with Azure
+      ansible.builtin.uri:
+        url: https://login.windows.net/{{ tenant_id }}/oauth2/token
+        method: POST
+        body_format: form-urlencoded
+        body:
+          resource: "{{ metrics_auth_body_url }}"
+          client_id: "{{ client_id }}"
+          grant_type: "client_credentials"
+          client_secret: "{{ client_secret }}"
+        return_content: true
+      register: auth_response
+      no_log: true
+      failed_when: auth_response.status != 200
+  rescue:
+    - name: JSON output
+      ansible.builtin.debug:
+        msg: "{{ auth_response.json.error_description }}"
+      failed_when: auth_response.status != 200

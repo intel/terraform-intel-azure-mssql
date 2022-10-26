@@ -1,0 +1,45 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Classify hosts depending on their OS family
+  ansible.builtin.group_by:
+    key: "os_family_{{ ansible_facts['os_family'] }}"
+
+- name: Classify hosts depending on their OS distribution
+  ansible.builtin.group_by:
+    key: "os_distribution_{{ ansible_facts['distribution'] }}"
+
+- name: Launch AWS-specific preconfiguration scripts
+  import_tasks: "aws/preconfigure.yaml"
+  when: preparation is defined and provider == "aws"
+
+- name: Prepare MS SQL database (prepare_mssql_host.yaml)
+  import_tasks: prepare_mssql_host.yaml
+  when: preparation is defined
+
+- name: Backup database (backup.yaml)
+  import_tasks: backup.yaml
+  when:
+    - restoredb == "yes"
+    - backup is defined
+
+- name: Start collecting Windows MSSQL metrics (start_metrics_collection.yaml)
+  import_tasks: start_metrics_collection.yaml
+  when: metrics_start is defined
+
+- name: Finish collecting Windows MSSQL metrics (finish_metrics_collection.yaml)
+  import_tasks: finish_metrics_collection.yaml
+  when: metrics_stop is defined
+
+- name: Restore database (restore.yaml)
+  import_tasks: restore.yaml
+  when:
+    - restoredb == "yes"
+    - metrics_stop is defined
+  notify:
+    - Stop SQLSERVERAGENT service on Databases hosts
+    - Restart MSSQLSERVER service on Databases hosts

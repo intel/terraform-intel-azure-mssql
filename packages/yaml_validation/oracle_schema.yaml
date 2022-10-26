@@ -1,0 +1,53 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+oracle_mount_dir:
+  type: "string"
+  required: True
+oracle_log_dir:
+  type: "string"
+  required: True
+hammerdb_version:
+  type: "string"
+  required: True
+warehouses:
+  type: "integer"
+  required: True
+v_users:
+  type: "integer"
+  required: True
+rampup_duration:
+  type: "integer"
+  required: True
+test_duration:
+  type: "integer"
+  required: True
+client_id:
+  type: "string"
+  required: True
+client_secret:
+  type: "string"
+  required: True
+subscription_id:
+  type: "string"
+  required: True
+tenant_id:
+  type: "string"
+  required: True
+resourcegroup:
+  type: "string"
+  required: True
+base_dir:
+  type: "string"
+  required: True
+scenario:
+  type: "string"
+  required: True
+location:
+  type: "string"
+provider:
+  type: "string"

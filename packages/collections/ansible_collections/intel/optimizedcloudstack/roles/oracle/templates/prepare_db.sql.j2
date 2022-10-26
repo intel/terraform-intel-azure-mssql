@@ -1,0 +1,14 @@
+CREATE BIGFILE TABLESPACE {{ hammerdb.tablespace }} DATAFILE '{{ oracle_mount_dir }}/{{ oracle.service_name }}/hammerdb_data.dbf' SIZE {{ oracle_conf.db_size }} EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO;
+CREATE UNDO TABLESPACE UNDOTBS2 DATAFILE '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02.dbf' SIZE {{ oracle_conf.undo_db_size }} AUTOEXTEND OFF RETENTION NOGUARANTEE BLOCKSIZE 8K FLASHBACK ON;
+alter system set undo_tablespace=undotbs2;
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_2.dbf' size {{ oracle_conf.undo_db_size }};
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_3.dbf' size {{ oracle_conf.undo_db_size }};
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_4.dbf' size {{ oracle_conf.undo_db_size }};
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_5.dbf' size {{ oracle_conf.undo_db_size }};
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_6.dbf' size {{ oracle_conf.undo_db_size }};
+alter tablespace UNDOTBS2 add datafile '{{ oracle_mount_dir }}/{{ oracle.service_name }}/undotbs02_7.dbf' size {{ oracle_conf.undo_db_size }};
+Drop tablespace UNDOTBS1 including contents and datafiles;
+CREATE USER {{ hammerdb.user }} IDENTIFIED BY "{{ hammerdb_pass }}" DEFAULT TABLESPACE {{ hammerdb.tablespace }};
+GRANT ALL PRIVILEGES to {{ hammerdb.user }};
+
+ALTER DATABASE DEFAULT TABLESPACE {{ hammerdb.tablespace }};

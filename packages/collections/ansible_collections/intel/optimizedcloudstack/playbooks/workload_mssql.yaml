@@ -1,0 +1,150 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+# @meta description: Documentation of Ansible part of Intel-OCS project.
+# @tag installation # This tag indicates tasks that perform installations and configuration of neccessary components & tools.
+# @tag experiments # This tag is related to tasks connected with benchmarking, i.e. preparing experiment running HammerDB and collecting results, metrics, etc.
+---
+# PREPARE AND DEPLOY
+- name: Wait for SSH to be ready
+  hosts: load_generator:sut
+  gather_facts: false
+  tasks:
+    - name: Wait for machines to be reachable
+      ansible.builtin.wait_for_connection:
+        timeout: 3600
+  tags: ["always"]
+
+- name: Validate all input variables
+  hosts: load_generator:sut
+  roles:
+    - validation
+  tags: ["always"]
+
+- name: Setup disks, configure mssql
+  hosts: sut
+  vars:
+    preparation: true
+  roles:
+    - mssql
+  tags: ["installation"]
+
+- name: Install HammerDB and dependencies
+  hosts: load_generator
+  tasks:
+    - name: Install HammerDB and dependencies
+      ansible.builtin.include_role:
+        name: hammerdb
+        tasks_from: mssql/prepare_hammerdb.yaml
+  tags: ["installation"]
+
+- name: Build schema
+  hosts: load_generator
+  tasks:
+    - name: Build schema
+      ansible.builtin.include_role:
+        name: hammerdb
+        tasks_from: mssql/populate_db.yaml
+  tags: ["installation"]
+
+- name: Backup database schema
+  hosts: sut
+  vars:
+    backup: true
+  roles:
+    - mssql
+  tags: ["installation"]
+
+# RUN
+- name: Start collecting Windows MSSQL specific metrics
+  hosts: sut
+  vars:
+    metrics_start: true
+  roles:
+    - mssql
+  tags: ["experiments"]
+
+- name: Benchmark start time
+  hosts: localhost
+  tasks:
+    - name: Get benchmark start time
+      ansible.builtin.set_fact:
+        benchmark_start: "{{ now(utc=True).isoformat() }}"
+        benchmark_directory_date: "{{ ansible_date_time['iso8601_basic_short']}}"
+      changed_when: false
+  tags: ["experiments"]
+
+- name: Run tests for fixed number of warehouses
+  hosts: load_generator
+  tasks:
+    - name: Run tests for fixed number of warehouses
+      ansible.builtin.include_role:
+        name: hammerdb
+        tasks_from: mssql/run_benchmark.yaml
+  tags: ["experiments"]
+
+- name: Benchmark end time
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Get benchmark end time
+      ansible.builtin.set_fact:
+        benchmark_end: "{{ now(utc=True).isoformat() }}"
+      changed_when: false
+    - name: Wait for metrics collection # pause is meant to give time for Azure metrics monitor to refresh (every 5 minutes)
+      ansible.builtin.pause:
+        minutes: 5
+  tags: ["experiments"]
+
+- name: Finish collecting Windows MSSQL specific metrics and restore database if set
+  hosts: sut
+  vars:
+    metrics_stop: true
+  roles:
+    - mssql
+  tags: ["experiments"]
+
+- name: Prepare directory for benchmark results and logs
+  hosts: localhost
+  run_once: true
+  tasks:
+    - name: Create dir for results
+      run_once: true
+      retries: 3
+      delay: 3
+      ansible.builtin.file:
+        mode: "0755"
+        state: directory
+        path: "{{ results_dir_name }}"
+  tags: ["experiments"]
+
+- name: Create benchmark report
+  hosts: localhost
+  roles:
+    - parse_results
+  tags: ["experiments"]
+
+- name: Store database configuration
+  hosts: sut
+  tasks:
+    - name: Save database configuration
+      ansible.builtin.fetch:
+        src: "C:/tpcSPConfig.tsv"
+        dest: "{{ results_dir_name }}/"
+        flat: true
+    - name: Save database error logs
+      ansible.builtin.fetch:
+        src: 'C:\ERRORLOG'
+        dest: "{{ results_dir_name }}/"
+        flat: true
+  ignore_errors: true
+  tags: ["experiments"]
+
+- name: Run metric collection role
+  hosts: localhost
+  roles:
+    - collect_metrics
+  tags: ["experiments"]

@@ -1,0 +1,21 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# @var disk_partition_number: 1 # Number of partition, which will be prepared for attached disk.
+disk_partition_number: 1
+
+# @var disk_label_type: gpt # Label type, which will be used for attached disk.
+disk_label_type: "gpt"
+
+# @var fstab_path: /etc/fstab # Path to fstab file.
+fstab_path: "/etc/fstab"
+
+# @var available_devices: {} # Map with all devices and their types (temp_disk, log_disk, data_disk). [DO NOT SET]
+available_devices: {}
+
+# @var azure_disk_device_path: /dev/disk/azure # Path to disk devices on Azure VM
+azure_disk_device_path: "/dev/disk/azure"

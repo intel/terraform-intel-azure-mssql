@@ -1,0 +1,71 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Classify hosts depending on their OS family
+  ansible.builtin.group_by:
+    key: "os_family_{{ ansible_facts['os_family'] }}"
+
+- name: Classify hosts depending on their OS distribution
+  ansible.builtin.group_by:
+    key: "os_distribution_{{ ansible_facts['distribution'] }}"
+
+- name: Check if HammerDB dir exists.
+  run_once: true
+  ansible.windows.win_stat:
+    path: "{{ hammerdb_bin_dir }}"
+  register: dir_hammerdb
+
+- name: Prepare directory for Hammerdb
+  ansible.windows.win_file:
+    path: "{{ hammerdb_bin_dir }}"
+    state: directory
+  when: not dir_hammerdb.stat.exists
+
+- name: Download Hammerdb zip
+  ansible.windows.win_get_url:
+    url: "{{ hammerdb_urls[hammerdb_version] }}"
+    dest: '{{ hammerdb_bin_dir }}\HammerDB.zip'
+  when: not dir_hammerdb.stat.exists
+
+- name: Unpack Hammerdb archive
+  community.windows.win_unzip:
+    src: '{{ hammerdb_bin_dir }}\HammerDB.zip'
+    dest: "{{ hammerdb.unpack_archive_path }}"
+    delete_archive: true
+  when: not dir_hammerdb.stat.exists
+
+- name: Download Visual C++ modules
+  ansible.windows.win_get_url:
+    url: https://aka.ms/vs/16/release/vc_redist.x64.exe
+    dest: C:\Program Files\
+
+- name: Install Visual C++ modules
+  ansible.windows.win_package:
+    path: C:\Program Files\vc_redist.x64.exe
+    product_id: "{CF2BEA3C-26EA-32F8-AA9B-331F7E34BA97}"
+    arguments:
+      - /install
+      - /passive
+      - /norestart
+
+- name: Download ODBC Driver
+  ansible.windows.win_get_url:
+    url: https://go.microsoft.com/fwlink/?linkid=2153471
+    dest: C:\Program Files\msodbcsql.msi
+
+- name: Install ODBC Driver
+  ansible.windows.win_command: msiexec /quiet /passive /qn /i msodbcsql.msi IACCEPTMSODBCSQLLICENSETERMS=YES ADDLOCAL=ALL
+  changed_when: true
+  args:
+    chdir: 'C:\Program Files\'
+  retries: 12
+  delay: 15
+
+- name: Prepare config file xml
+  ansible.windows.win_template:
+    src: "mssql/mssqlserver.xml.j2"
+    dest: '{{ hammerdb_bin_dir }}\config\mssqlserver.xml'

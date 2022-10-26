@@ -1,0 +1,1 @@
+../common/azure-variables.tf

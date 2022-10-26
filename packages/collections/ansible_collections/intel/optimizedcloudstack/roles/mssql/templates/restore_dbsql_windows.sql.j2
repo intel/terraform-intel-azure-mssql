@@ -1,0 +1,10 @@
+EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'{{ database_name }}'
+GO
+USE [master]
+GO
+DROP DATABASE [{{ database_name }}]
+GO
+
+RESTORE DATABASE [{{ database_name }}]
+FROM DISK = '{{ vm_mssql_host_backup_path }}\{{ database_name }}_Backup.bak'
+GO

@@ -1,0 +1,43 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# @var export_vm_name_full: <workload-specific> # Specify which image will be used in image creation procedure. By default it's database virtual machine. Need to be full virtual machine id
+export_vm_name_full: "/subscriptions/{{ subscription_id }}/resourceGroups/{{ resourcegroup }}/providers/Microsoft.Compute/virtualMachines/{{ export_vm_name }}"
+# @var export_vm_name: <workload-specific> # Specify which image will be used in image creation procedure. By default it's database virtual machine.
+export_vm_name: "vm-{{ scenario }}"
+# @var export_image_name: intel_optimized_cloud_image # Specify name for image created in export step
+export_image_name: "intel_optimized_cloud_image"
+# @var client_id: "" # (Service principal only) Used in authorization with az login command. Can be overriden from launcher in perform stage. Mandatory for export action step.
+client_id: ""
+# @var client_secret: "" # (Service principal only) Used in authorization with az login command. Can be overriden from launcher in perform stage. Mandatory for export action step.
+client_secret: ""
+# @var resourcegroup: "" # (Service principal only) Used in authorization with az login command. Can be overriden from launcher in perform stage. Mandatory for export action step.
+resourcegroup: ""
+# @var tenant_id: "" # (Service principal only) Used in authorization with az login command. Can be overriden from launcher in perform stage. Mandatory for export action step.
+tenant_id: ""
+# @var temporary_files: __pycache__, terraform/.terraform, terraform/.terraform.lock.hcl, terraform/terraform.tfstate, terraform/terraform.tfvars, terraform/terraform.tfstate.backup # Used to clean temporary files in export destroy mode,
+temporary_files:
+  - "{{ base_dir }}/__pycache__"
+  - "{{ base_dir }}/terraform/.terraform,"
+  - "{{ base_dir }}/terraform/azure-mysql/.terraform.lock.hcl"
+  - "{{ base_dir }}/terraform/azure-mysql/terraform.tfstate"
+  - "{{ base_dir }}/terraform/azure-mysql/terraform.tfstate.backup"
+  - "{{ base_dir }}/terraform/azure-mssql/.terraform.lock.hcl"
+  - "{{ base_dir }}/terraform/azure-mssql/terraform.tfstate"
+  - "{{ base_dir }}/terraform/azure-mssql/terraform.tfstate.backup"
+  - "{{ base_dir }}/terraform/terraform.tfvars"
+  - "{{ base_dir }}/packages/mssql-password"
+  - "{{ base_dir }}/terraform/infra_keys"
+# @var target_resourcegroup: {{ resourcegroup }}_IMAGS # Used in exporting image to other resource group.
+target_resourcegroup: "{{ resourcegroup }}_IMAGES"
+# @var location: "westus" # Used in exporting image to specify destination Azure region. Can be overriden from launcher in perform stage. Mandatory for export action step.
+location: "westus"
+# @var export_image_mandatory_vars: client_id, client_secret, resourcegroup, tenant_id # Used in validation, validate mandatory variables
+export_image_mandatory_vars:
+  - resourcegroup
+  - scenario
+  - base_dir

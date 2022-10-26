@@ -1,0 +1,19 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Prepare backup SQL command
+  ansible.windows.win_template:
+    src: "backup_dbsql_windows.sql.j2"
+    dest: "{{ mssql_hammerdb.test_dir }}/backup.sql"
+
+- name: Backup database
+  ansible.windows.win_shell: >
+    {{ hammerdb.sqlcmd_path }}
+    -U {{ mssql.username }} -P{{ mssql.password }}
+    -i {{ mssql_hammerdb.test_dir }}/backup.sql
+  async: 180000
+  poll: 60

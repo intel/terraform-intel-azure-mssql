@@ -1,0 +1,96 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Check if HammerDB dir exists.
+  run_once: true
+  ansible.windows.win_stat:
+    path: "{{ hammerdb_bin_dir }}"
+  register: dir_hammerdb
+
+- name: Prepare directory for Hammerdb Agent
+  ansible.windows.win_file:
+    path: "{{ hammerdb_bin_dir }}"
+    state: directory
+  when: not dir_hammerdb.stat.exists
+
+- name: Download Hammerdb zip
+  ansible.windows.win_get_url:
+    url: "{{ hammerdb_urls[hammerdb_version] }}"
+    dest: '{{ hammerdb_bin_dir }}\HammerDB.zip'
+  when: not dir_hammerdb.stat.exists
+
+- name: Unpack Hammerdb archive
+  community.windows.win_unzip:
+    src: '{{ hammerdb_bin_dir }}\HammerDB.zip'
+    dest: "{{ hammerdb.unpack_archive_path }}"
+    delete_archive: true
+  when: not dir_hammerdb.stat.exists
+
+- name: Create temp_dir directory
+  ansible.windows.win_file:
+    path: "{{ vm_mssql_host_temp_path }}"
+    state: directory
+
+- name: Prepare metrics configuration files
+  ansible.windows.win_template:
+    src: "{{ item }}"
+    dest: "{{ vm_mssql_host_temp_path }}/{{ item }}"
+  loop:
+    - "SQLPerf.xml"
+    - "tpcperflog.xml"
+    - "tpcperflogdisks.xml"
+    - "makeperfmondataset.ps1"
+    - "perfmontprocc.xml"
+
+- name: Remove Perflogs
+  ansible.windows.win_file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - C:\PerfLogs\Admin\SQLPerf\tpcperflog.blg
+    - C:\PerfLogs\Admin\SQLPerf\tpcperflogdisks.csv
+    - C:\PerfLogs\Admin\SQLPerf\perfmontprocc.csv
+  retries: 5
+  delay: 10
+
+- name: Run TPCPerf scripts
+  ansible.windows.win_command: "powershell.exe -ExecutionPolicy ByPass -File C:/temp/makeperfmondataset.ps1 -XMLFilePath C:/temp/{{ item.xml_file }} -DataCollectorName {{ item.collector_name }}"
+  changed_when: true
+  loop:
+    - collector_name: "TPCPerf01"
+      xml_file: "tpcperflog.xml"
+    - collector_name: "TPCPerf02"
+      xml_file: "tpcperflogdisks.xml"
+    - collector_name: "perfmontprocc"
+      xml_file: "perfmontprocc.xml"
+
+- name: Check if cpustat.csv exists
+  ansible.windows.win_stat:
+    path: '{{ hammerdb_bin_dir }}\agent\cpustat.csv'
+  register: cpustat_file
+
+- name: Stop mpstat process
+  ansible.windows.win_shell: taskkill /F /IM tclsh86t.exe
+  when: cpustat_file.stat.exists
+  failed_when: false
+
+- name: Remove cpustat.csv
+  ansible.windows.win_file:
+    path: '{{ hammerdb_bin_dir }}\agent\cpustat.csv'
+    state: absent
+  retries: 5
+  delay: 10
+  when: cpustat_file.stat.exists
+
+- name: Run CPU stats
+  ansible.windows.win_shell: mpstat.bat > cpustat.csv
+  args:
+    executable: cmd
+    chdir: '{{ hammerdb_bin_dir }}\agent'
+    creates: '{{ hammerdb_bin_dir }}\agent\cpustat.csv'
+  async: 10
+  poll: 0

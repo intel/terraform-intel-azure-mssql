@@ -1,0 +1,1 @@
+../common/mssql-workload-specific-variables.tf

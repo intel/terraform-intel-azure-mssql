@@ -1,0 +1,36 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+- name: Run PS commands to collect metrics
+  ansible.windows.win_powershell:
+    script: |
+      $datacollectorset = New-Object -COM Pla.DataCollectorSet
+      $datacollectorset.Query("TPCPerf01",$null)
+      $datacollectorset.stop($True)
+      $datacollectorset.Query("TPCPerf02",$null)
+      $datacollectorset.stop($True)
+      $datacollectorset.Query("perfmontprocc",$null)
+      $datacollectorset.stop($True)
+
+- name: Store metrics results (TPC1, TPC2, perfmontprocc)
+  ansible.builtin.fetch:
+    src: "C:/PerfLogs/Admin/SQLPerf/{{ item }}"
+    dest: "{{ results_dir_name }}/{{ item }}"
+    flat: true
+  loop:
+    - "tpcperflog.blg"
+    - "tpcperflogdisks.csv"
+    - "perfmontprocc.csv"
+
+- name: Stop mpstat process
+  ansible.windows.win_shell: taskkill /F /IM tclsh86t.exe
+
+- name: Save output cpu stats
+  ansible.builtin.fetch:
+    src: "{{ hammerdb_bin_dir }}/agent/cpustat.csv"
+    dest: "{{ results_dir_name }}/"
+    flat: true

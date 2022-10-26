@@ -1,0 +1,67 @@
+[mysqld]
+datadir={{ mysql_dir }}
+socket={{ login_unix_socket | default(mysql_dir + "/mysql.sock") }}
+symbolic-links=0
+large-pages
+skip-log-bin
+max_connections=4000
+table_open_cache=8000
+table_open_cache_instances=16
+back_log=1500
+default_password_lifetime=0
+ssl=0
+performance_schema=OFF
+max_prepared_stmt_count=128000
+skip_log_bin=1
+character_set_server=latin1
+collation_server=latin1_swedish_ci
+transaction_isolation=REPEATABLE-READ
+wait_timeout=2147483
+interactive_timeout=2147483
+# files
+innodb_file_per_table
+innodb_log_file_size={{ mysql_conf.innodb_log_file_size }}
+innodb_log_files_in_group=32
+innodb_open_files=4000
+# buffers
+innodb_buffer_pool_size={{ mysql_conf.innodb_buffer_pool_size }}
+innodb_buffer_pool_instances={{ mysql_conf.innodb_buffer_pool_instances }}
+innodb_log_buffer_size={{ mysql_conf.innodb_log_buffer_size }}
+# tune
+innodb_doublewrite={{ mysql_conf.innodb_doublewrite }}
+innodb_thread_concurrency={{ mysql_conf.innodb_thread_concurrency }}
+innodb_flush_log_at_trx_commit={{ mysql_conf.innodb_flush_log_at_trx_commit }}
+innodb_max_dirty_pages_pct={{ mysql_conf.innodb_max_dirty_pages_pct }}
+innodb_max_dirty_pages_pct_lwm={{ mysql_conf.innodb_max_dirty_pages_pct_lwm }}
+join_buffer_size={{ mysql_conf.join_buffer_size }}
+sort_buffer_size={{ mysql_conf.sort_buffer_size }}
+innodb_use_native_aio={{ mysql_conf.innodb_use_native_aio }}
+innodb_stats_persistent={{ mysql_conf.innodb_stats_persistent }}
+innodb_spin_wait_delay={{ mysql_conf.innodb_spin_wait_delay }}
+innodb_max_purge_lag_delay={{ mysql_conf.innodb_max_purge_lag_delay }}
+innodb_max_purge_lag={{ mysql_conf.innodb_max_purge_lag }}
+innodb_flush_method={{ mysql_conf.innodb_flush_method }}
+innodb_checksum_algorithm={{ mysql_conf.innodb_checksum_algorithm }}
+innodb_io_capacity={{ mysql_conf.innodb_io_capacity }}
+innodb_io_capacity_max={{ mysql_conf.innodb_io_capacity_max }}
+innodb_lru_scan_depth={{ mysql_conf.innodb_lru_scan_depth }}
+innodb_change_buffering={{ mysql_conf.innodb_change_buffering }}
+innodb_read_only={{ mysql_conf.innodb_read_only }}
+innodb_page_cleaners={{ mysql_conf.innodb_page_cleaners }}
+innodb_undo_log_truncate={{ mysql_conf.innodb_undo_log_truncate }}
+# perf special
+innodb_adaptive_flushing={{ mysql_conf.innodb_adaptive_flushing }}
+innodb_flush_neighbors={{ mysql_conf.innodb_flush_neighbors }}
+innodb_read_io_threads={{ mysql_conf.innodb_read_io_threads }}
+innodb_write_io_threads={{ mysql_conf.innodb_write_io_threads }}
+innodb_purge_threads={{ mysql_conf.innodb_purge_threads }}
+innodb_adaptive_hash_index={{ mysql_conf.innodb_adaptive_hash_index }}
+# monitoring
+innodb_monitor_enable='%'
+
+log-error={{ mysql_log_path }}
+pid-file=/var/run/mysqld/mysqld.pid
+
+[client]
+port=3306
+socket={{ login_unix_socket | default(mysql_dir + "/mysql.sock") }}

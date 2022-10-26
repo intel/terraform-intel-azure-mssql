@@ -1,0 +1,40 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# MYSQL
+
+# @var mysql_hammerdb: [MYSQL] # Dict with URLs to different archives of HammerDB
+mysql_hammerdb:
+  install_path_prefix: "/opt"
+
+# @var mysql_pkg: [MYSQL] # Dict with URLs to MySQL yum packages
+mysql_pkg:
+  yum_repo_url_50: "https://repo.mysql.com/mysql57-community-release-el7.rpm"
+  yum_repo_url_80: "https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm"
+
+# @var common_rhel_dependencies: [MYSQL] # List of Linux dependencies to install
+common_rhel_dependencies:
+  - wget
+  - epel-release
+
+# @var hammerdb_version: 4.2 # Version of HammerDB. Supported version: 3.2, 3.3, 4.0, 4.2. Can be overriden from launcher in perform stage
+hammerdb_version: "4.2"
+
+# @var mysql_version: 8.0.22 [MYSQL] # Version of MySQL database. Can be overriden from launcher in perform stage
+mysql_version: "8.0.22"
+
+# @var lock_default: "" # Amount of time to wait for the yum lockfile to be freed. (RedHat Only)
+# lock_default: ""
+
+# @var update_cache: # Update package manager cache before installing package
+# update_cache: true/false
+
+# @var mysql_service: mysql # Define service name to restart/stop on different distribution
+mysql_service: mysqld
+
+# @var mysql_rpm_key_fingerprint: # A fingerprint of the GPG key for RPM repository with MySQL
+mysql_rpm_key_fingerprint: A4A9 4068 76FC BD3C 4567  70C8 8C71 8D3B 5072 E1F5

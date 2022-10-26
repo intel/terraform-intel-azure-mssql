@@ -1,0 +1,14 @@
+{% for log_nr in range(4,6) %}
+alter database add logfile group {{ log_nr }} (
+'{{ oracle_log_dir }}/redo0{{ log_nr }}_0.log',
+'{{ oracle_log_dir }}/redo0{{ log_nr }}_1.log'
+) size {{ log_size }}g blocksize 4096;
+{% endfor %}
+alter system switch logfile;
+
+ALTER DATABASE DROP LOGFILE GROUP 1;
+ALTER DATABASE DROP LOGFILE GROUP 2;
+ALTER DATABASE DROP LOGFILE GROUP 3;
+
+alter system switch logfile;
+alter system checkpoint;

@@ -1,0 +1,51 @@
+#!/usr/bin/tclsh8.6
+
+# runtimer parameter, line 48; HDB docs: The timer will return when vucomplete returns true or the timer reaches the seconds value.
+# Calculation basis: "runtimer must be longer than rampup + duration"
+# TPM is first measured on the rampup minute and then after duration minutes, VUs run until runtimer or until they end
+# https://github.com/TPC-Council/HammerDB/discussions/84
+# Run should finish in less time anyways if duration passes, not necessarily taking "runtimer" time, *2 should be enough
+# It was set to 1.5 on one of our own repositories and hardcoded to low values in the other
+
+proc runtimer { seconds } {
+set x 0
+set timerstop 0
+while {!$timerstop} {
+ incr x
+ after 1000
+  if { ![ expr {$x % 60} ] } {
+  set y [ expr $x / 60 ]
+  puts "Timer: $y minutes elapsed"
+  }
+ update
+ if {  [ vucomplete ] || $x eq $seconds } { set timerstop 1 }
+    }
+return
+}
+puts "SETTING CONFIGURATION"
+dbset db mssqls
+diset connection mssqls_server {{ mssql_listening_ip }}
+diset connection mssqls_port {{ mssql.port }}
+diset connection tcp true
+dict set configmssqlserver connection mssqls_odbc_driver {{ windows_odbc_driver }}
+diset tpcc mssqls_driver timed
+diset tpcc mssqls_dbase {{ database_name }}
+diset tpcc mssqls_rampup {{ rampup_duration }}
+diset tpcc mssqls_duration {{ test_duration }}
+loadscript
+print script
+puts "SEQUENCE STARTED"
+
+puts "{{ v_users }} VU TEST"
+vuset showoutput 0
+vuset logtotemp 0
+vuset vu {{ v_users }}
+vucreate
+vurun
+runtimer {{ ((rampup_duration | int) + (test_duration | int)) * 60 * 2 }}
+vustatus
+vudestroy
+vucomplete
+after 5000
+
+puts "TEST SEQUENCE COMPLETE"

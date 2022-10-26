@@ -1,0 +1,28 @@
+
+
+input.cloud_env_params (required)
+Plugin for cloud-env outputs.
+
+input.command_to_execute (required)
+Command that will be executed by extension.
+
+input.storage_account (required)
+Storage account to use for upload.
+
+input.storage_container (required)
+Storage container to use for upload.
+
+input.template_parameters (required)
+Variables to use inside templates.
+
+input.vm_id (required)
+ID of VM object to which disks should be attached.
+
+input.vm_name (required)
+VM name to which disks should be attached.
+
+input.filepath (null)
+Script filepath.
+
+input.tags (null)
+Tags to use for resources. Can be null.

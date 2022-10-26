@@ -1,0 +1,23 @@
+#!/bin/tclsh
+puts "SETTING CONFIGURATION"
+global complete
+proc wait_to_complete {} {
+  global complete
+  set complete [vucomplete]
+  if {!$complete} { after 5000 wait_to_complete } else { exit }
+}
+dbset db ora
+diset connection instance {{ oracle.service_name }}
+diset tpcc count_ware {{ warehouses }}
+diset tpcc num_vu {{ v_users }}
+{% if warehouses > 200 %}
+diset tpcc partition true
+{% else %}
+diset tpcc partition false
+{% endif %}
+diset tpcc hash_clusters false
+vuset logtotemp 1
+print dict
+buildschema
+wait_to_complete
+vwait forever

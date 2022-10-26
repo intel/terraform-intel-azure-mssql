@@ -1,0 +1,27 @@
+{# Separators #}
+{% set sep = namespace(comma = ', ', comma0 = '') -%}
+
+{# Datetime header #}
+{{- "Datetime:" -}}
+{{- sep.comma -}}
+{%- for date in metrics_values[0].value[0].timeseries[0].data -%}
+    {{- date.timeStamp -}}
+    {{- sep.comma -}}
+{% endfor %}
+{{- '\n\n' -}}
+
+{# Rows #}
+{%- for json, resource in metrics_values|zip(resources_urls) -%}
+    {{- resource.split('/')[-1] + '\n' -}}
+    {%- for item in json.value -%}
+        {{- '\n'+ item.name.value + sep.comma-}}
+        {% if (item.timeseries|length) > 0 %}
+            {%- for index in range(item.timeseries[0].data|length) -%}
+                {{- (item.timeseries[0].data[index].average|string + sep.comma ) if "average" in item.timeseries[0].data[index] else  sep.comma0 -}}
+            {% endfor %}
+        {% else %}
+            {{- "No data" -}}
+        {% endif %}
+    {% endfor %}
+    {{- '\n\n' -}}
+{% endfor %}

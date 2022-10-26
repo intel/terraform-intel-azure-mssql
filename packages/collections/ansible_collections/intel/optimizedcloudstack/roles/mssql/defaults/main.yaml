@@ -1,0 +1,35 @@
+### INTEL LICENSE STARTS BELOW
+# INTEL CONFIDENTIAL
+# Copyright (C) 2021-2022 Intel Corporation
+# This software and the related documents are Intel copyrighted materials, and your use of them is governed by the express license under which they were provided to you ("License"). Unless the License provides otherwise, you may not use, modify, copy, publish, distribute, disclose or transmit this software or the related documents without Intel's prior written permission.
+# This software and the related documents are provided as is, with no express or implied warranties, other than those that are expressly stated in the License.
+### INTEL LICENSE END
+---
+# @var hammerdb_bin_dir: [MSSQL] # Sets path for HammerDB binaries
+hammerdb_bin_dir: 'C:\Program Files\HammerDB-{{ hammerdb_version }}'
+
+# @var hammerdb_urls: [MSSQL] # Dict with HammerDB zip URLs imported per OS from group_vars/os_<used os>.yaml
+# hammerdb_urls:
+
+# @var mssql_hammerdb: [MSSQL] # Dict with paths used for installation and benchmarking
+mssql_hammerdb:
+  test_dir: 'C:\Users\testadmin\AppData\Local\Temp'
+  sqlcmd_path: 'C:\"Program Files"\"Microsoft SQL Server"\"Client SDK"\ODBC\170\Tools\Binn\SQLCMD.EXE'
+
+# @var mssql: [MSSQL] # Dict with neccessary mssql variables like port, username and password
+mssql:
+  port: 1433
+  username: testadmin
+  password: "{{ lookup('file', base_dir + '/packages/mssql-password') }}"
+
+# @var vm_mssql_host_temp_path: [MSSQL] # Path to temporary dir inside MSSQL virtual machine
+vm_mssql_host_temp_path: 'C:\temp\'
+
+# @var server_disks_data_disks: [MSSQL] # Passes number of used data disks for SQL preparation script
+server_disks_data_disks: 1
+
+# @var database_startup_flags: [MSSQL] # Which parameter flags should be used during MS SQL server startup. Defaults to space so that argument has any value inside the script call.
+database_startup_flags: ""
+
+# @var database_name: tpcc_200WH # [MSSQL] Name of database to create. Can be overriden from launcher in perform stage.
+database_name: "tpcc_200WH"
