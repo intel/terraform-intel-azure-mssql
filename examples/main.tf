@@ -29,7 +29,7 @@ module "optimized-mssql-server" {
 
 }
 
-#COnsumption Example
+#Consumption Example
 #terraform init  
 #terraform plan -var="mssql_administrator_login_password=..." #Enter a complex password
 #terraform apply -var="mssql_administrator_login_password=..." #Enter a complex password
