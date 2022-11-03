@@ -18,32 +18,22 @@ variable "resource_group_name" {
 variable "subnet_name"{
   description = "Specifies the name of the Subnet."
   type = string
+  default = null
 }
 
 #Virtual Network Name 
 variable "subnet_virtual_network_name"{
   description = "Specifies the name of the Virtual Network this Subnet is located within."
   type = string
+  default = null
 }
 
 #Resource group name that the subnet is within
 variable "subnet_resource_group_name"{
   description = "Specifies the name of the resource group the Virtual Network is located in."
   type = string
+  default = null
 }
-
-#Azure AD SQL Administrator name
-variable "azuread_login_username" {
-  description = "The login username of the Azure AD Administrator of this SQL Server."
-  type = string
-}
-
-#Azure AD SQL Administrator object id
-variable "azuread_object_id" {
-  description =  "The object id of the Azure AD Administrator of this SQL Server."
-  type = string
-}
-
 
 #MSSQL Server Name 
 variable "mssql_server_name" {
@@ -51,20 +41,20 @@ variable "mssql_server_name" {
   type        = string
 }
 
-#MySQL Server admin password. Do not commit password to version control systems 
+#MSSQL Server admin password. Do not commit password to version control systems 
 variable "mssql_administrator_login_password" {
   description = "MSSQL server name admin password"
   type        = string
 }
 
-#MSSQL Database Name (ASK LUCAS if we provide a default or not?)
+#MSSQL Database Name 
 variable "mssql_db_name" {
   description = "MSSQL database name"
   type        = string
 
 }
 
-#MySQL Server admin username 
+#MSSQL Server admin username 
 variable "mssql_administrator_login" {
   description = "MSSQL server name admin username"
   type        = string
@@ -148,14 +138,16 @@ variable "firewall_ip_range" {
     end_ip_address    = string
   }))
   description = "User will provide range of IP adrress in form of List of (objects)"             
+  default = [] 
+}
+
+#Values for azuread_administrator block
+variable "azuread_input_variables"{
+  description = "The values for azuread_administrator block"
+  type = list(object({
+    azuread_login_username = string
+    azuread_object_id      = string 
+    azuread_authentication_only = bool
+  }))
   default = []
 }
-
-#Flag to enable/disable Azure AD authentication only
-variable "azuread_authentication_only" {
-  description = "Specifies whether only AD Users and administrators (like azuread_administrator.0.login_username) can be used to login, or also local database users (like administrator_login). When true, the administrator_login and administrator_login_password properties can be omitted"
-  type = bool
-  default = false
-}
-
-
