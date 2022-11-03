@@ -36,7 +36,7 @@ variable "mssql_administrator_login_password" {
 }
 
 # Provision Intel Optimized Azure MSSQL server 
-module "optimized-mysql-server" {
+module "optimized-mssql-server" {
   source                             = "github.com/intel/terraform-intel-azure-mssql"
   resource_group_name                = "ENTER_RG_NAME_HERE"
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
@@ -47,7 +47,7 @@ module "optimized-mysql-server" {
 }
 
 # Provision Intel Optimized Azure MSSQL server with Azure AD block, firewall_ip_range, and virtual network rule.
-module "optimized-mysql-server" {
+module "optimized-mssql-server" {
   source                             = "github.com/intel/terraform-intel-azure-mssql"
   resource_group_name                = "ENTER_RG_NAME_HERE"
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
