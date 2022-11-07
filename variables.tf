@@ -19,6 +19,7 @@ variable "subnet_name"{
   description = "Specifies the name of the Subnet."
   type = string
   default = null
+
 }
 
 #Virtual Network Name 
@@ -35,6 +36,17 @@ variable "subnet_resource_group_name"{
   default = null
 }
 
+#Azure AD SQL Administrator name
+variable "azuread_login_username" {
+  description = "The login username of the Azure AD Administrator of this SQL Server."
+  type = string
+}
+
+#Azure AD SQL Administrator object id
+variable "azuread_object_id" {
+  description =  "The object id of the Azure AD Administrator of this SQL Server."
+  type = string
+}
 #MSSQL Server Name 
 variable "mssql_server_name" {
   description = "MSSQL server name"

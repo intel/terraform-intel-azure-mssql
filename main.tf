@@ -26,6 +26,7 @@ resource "azurerm_mssql_server" "mssql_server" {
       object_id = azuread_administrator.value["azuread_object_id"]
       azuread_authentication_only = azuread_administrator.value["azuread_authentication_only"]
     }
+
   }
   
 }
@@ -51,6 +52,7 @@ resource "azurerm_mssql_firewall_rule" "mssql_firewall_rule" {
   count            = length(var.firewall_ip_range) == 0 ? 0 : length(var.firewall_ip_range)
   name             = "mssql_firewall_rule${count.index}"
   server_id        = azurerm_mssql_server.mssql_server.id
+
   start_ip_address = var.firewall_ip_range[count.index]["start_ip_address"]
   end_ip_address   = var.firewall_ip_range[count.index]["end_ip_address"]
   
@@ -70,3 +72,4 @@ resource "azurerm_mssql_virtual_network_rule" "mssql_vnet_rule" {
   subnet_id = data.azurerm_subnet.subnet[count.index].id
   ignore_missing_vnet_service_endpoint = true
 }
+

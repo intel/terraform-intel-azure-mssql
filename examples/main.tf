@@ -30,6 +30,7 @@ module "optimized-mssql-server" {
   subnet_resource_group_name        = "shreejan_test_mssql"
 }
 
+
 #terraform init  
 #terraform plan -var="mssql_administrator_login_password=..." #Enter a complex password
 #terraform apply -var="mssql_administrator_login_password=..." #Enter a complex password
