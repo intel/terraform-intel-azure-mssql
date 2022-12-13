@@ -1,89 +1,61 @@
-## Intel Cloud Optimization Module for Azure MSSQL 
+<p align="center">
+  <img src="https://github.com/intel/terraform-intel-azure-postgresql-flexible-server/blob/main/images/logo-classicblue-800px.png?raw=true" alt="Intel Logo" width="250"/>
+</p>
 
-This module can be used to deploy an Intel optimized Azure MSSQL Server instance. 
+# Intel Cloud Optimization Modules for Terraform
 
-Instance selection and configuration are included by default in the code. 
+© Copyright 2022, Intel Corporation
 
-Xeon Tunning guide
+## Azure MSSQL Server Module
 
-<https://www.intel.com/content/www/us/en/developer/articles/guide/open-source-database-tuning-guide-on-xeon-systems.html>
+This module can be used to deploy an Intel optimized Azure MSSQL Server instance.
+Instance selection is included by default in the code.
 
-
+The MSSQL Optimizations were based off [Intel Xeon Tunning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/open-source-database-tuning-guide-on-xeon-systems.html>)
 
 ## Usage
 
-See examples folder for code ./examples/main.tf
+**See examples folder for complete examples.**
 
-
-
-By default, you will only have to pass three variables
+By default, you will only have to pass four variables
 
 ```hcl
 resource_group_name 
 mssql_server_name  
 mssql_db_name 
 mssql_administrator_login_password 
-
 ```
+variables.tf
 
-
-Example of main.tf
 ```hcl
-# main.tf
-
-variable "mssql_administrator_login_password" {
-  description = "The admin password"
+variable "db_password" {
+  description = "Password for the master database user."
+  type        = string
+  sensitive   = true
 }
-
-# Provision Intel Optimized Azure MSSQL server 
+```
+main.tf
+```hcl
 module "optimized-mssql-server" {
   source                             = "github.com/intel/terraform-intel-azure-mssql"
   resource_group_name                = "ENTER_RG_NAME_HERE"
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
   mssql_db_name                      = "ENTER_MSSQL_DB_NAME_HERE"
   mssql_administrator_login_password = var.mssql_administrator_login_password
-  tags                               = {"ENTER_TAG_KEY" = "ENTER_TAG_VALUE", ... }                      #Can add tags as key-value pair
   
 }
-
-# Provision Intel Optimized Azure MSSQL server with Azure AD block, firewall_ip_range, and virtual network rule.
-module "optimized-mssql-server" {
-  source                             = "github.com/intel/terraform-intel-azure-mssql"
-  resource_group_name                = "ENTER_RG_NAME_HERE"
-  mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
-  mssql_db_name                      = "ENTER_MSSQL_DB_NAME_HERE"
-  mssql_administrator_login_password = var.mssql_administrator_login_password
-  tags                               = {"ENTER_TAG_KEY" = "ENTER_TAG_VALUE", ... }                      #Can add tags as key-value pair
-
-
-  #azuread block
-  azuread_input_variables = [{
-    azuread_login_username = "ENTER_AZUREAD_LOGIN_USERNAME_HERE",
-    azuread_object_id = "ENTER_AZUREAD_OBJECT_ID_HERE",
-    azuread_authentication_only = ENTER_AZUREAD_AUTHENTICATION_ONLY_HERE                                # type = boolean
-  }]
-
-  #firewall_ip_ranges
-  #For example: " [{start_ip_address = ..., end_ip_address = ... },..]"
-  firewall_ip_range                 =  [
-                                            {start_ip_address = "ENTER_START_IP_ADDRESS_HERE", end_ip_address = "ENTER_END_IP_ADDRESS_HERE" },...
-                                       ]
-
-  #Virtual Network rule requires a virtual network within the same resource group as MSSQL Server and DB
-  subnet_name                       = "ENTER_SUBNET_NAME_HERE"
-  subnet_virtual_network_name       = "ENTER_SUBNET_VIRTUAL_NETWORK_NAME_HERE"
-  subnet_resource_group_name        = "ENTER_RG_NAME_HERE"
-
-}
-
-
 ```
-Run terraform
-```
+
+
+
+Run Terraform
+
+```hcl
+export TF_VAR_db_password ='<USE_A_STRONG_PASSWORD>'
+
 terraform init  
-terraform plan -var="mssql_administrator_login_password=..." #Enter a complex password
-terraform apply -var="mssql_administrator_login_password=..." #Enter a complex password
-
+terraform plan
+terraform apply 
 ```
 ## Considerations
 
