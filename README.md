@@ -41,7 +41,7 @@ module "optimized-mssql-server" {
   resource_group_name                = "ENTER_RG_NAME_HERE"
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
   mssql_db_name                      = "ENTER_MSSQL_DB_NAME_HERE"
-  mssql_administrator_login_password = var.mssql_administrator_login_password
+  mssql_administrator_login_password = var.db_password
   
 }
 ```
