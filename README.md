@@ -11,7 +11,7 @@
 This module can be used to deploy an Intel optimized Azure MSSQL Server instance.
 Instance selection is included by default in the code.
 
-Additonal MSSQL Optimizations can be based off [Intel Xeon Tunning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configurel>)
+Additional MSSQL Optimizations can based off [Intel Xeon Tunning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configure%3E>). Scroll down to 'Tuning SQL Server for OLTP Workload' section.
 
 ## Usage
 
