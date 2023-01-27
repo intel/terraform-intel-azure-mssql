@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/intel/terraform-intel-azure-postgresql-flexible-server/blob/main/images/logo-classicblue-800px.png?raw=true" alt="Intel Logo" width="250"/>
+  <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/logo-classicblue-800px.png" alt="Intel Logo" width="250"/>
 </p>
 
 # Intel Cloud Optimization Modules for Terraform
@@ -37,7 +37,7 @@ variable "db_password" {
 main.tf
 ```hcl
 module "optimized-mssql-server" {
-  source                             = "github.com/intel/terraform-intel-azure-mssql"
+  source                             = "intel/azure-mssql/intel"
   resource_group_name                = "ENTER_RG_NAME_HERE"
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
   mssql_db_name                      = "ENTER_MSSQL_DB_NAME_HERE"
