@@ -5,8 +5,8 @@ module "optimized-mssql-server" {
   db_server_name      = "optimized-mssql-server-1"
   db_name             = "optimized-mssql-db-1"
   db_password         = var.db_password
-  tags = { owner = "shreejan.mistry@intel.com",
-    duration          = "4"
+  tags = { owner = "owner@intel.com",
+    duration          = "3"
     sql_public_access = "allow"
   }
 

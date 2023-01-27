@@ -5,7 +5,7 @@ module "optimized-mssql-server" {
   db_server_name      = "optimized-mssql-server-4"
   db_name             = "optimized-mssql-db-4"
   db_password         = var.db_password
-  tags = { owner = "shreejan.mistry@intel.com",
+  tags = { owner = "owner.mistry@intel.com",
     duration          = "4"
     sql_public_access = "allow"
   }
@@ -13,7 +13,7 @@ module "optimized-mssql-server" {
   #Required parameters for creating virtual network rule
   subnet_name                 = "default"
   subnet_virtual_network_name = "mssql_vnet_test"
-  subnet_resource_group_name  = "shreejan_test_mssql"
+  subnet_resource_group_name  = "test_mssql"
 }
 
 
