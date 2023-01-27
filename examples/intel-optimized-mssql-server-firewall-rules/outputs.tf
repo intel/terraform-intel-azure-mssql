@@ -105,7 +105,7 @@ output "db_firewall_rules" {
 
 output "db_name" {
   description = "Name of the database that has been provisioned on the database instance."
-  value       =module.optimized-mssql-server.db_name
+  value       = module.optimized-mssql-server.db_name
 }
 
 output "db_collation" {
