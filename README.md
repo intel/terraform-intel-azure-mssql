@@ -104,7 +104,7 @@ No modules.
 | <a name="input_db_min_tls_version"></a> [db\_min\_tls\_version](#input\_db\_min\_tls\_version) | The Minimum TLS Version for all SQL Database and SQL Data Warehouse databases associated with the server | `string` | `"1.2"` | no |
 | <a name="input_db_name"></a> [db\_name](#input\_db\_name) | MSSQL database name | `string` | n/a | yes |
 | <a name="input_db_password"></a> [db\_password](#input\_db\_password) | Password for the master database user. | `string` | n/a | yes |
-| <a name="input_db_public_network_access_enabled"></a> [db\_public\_network\_access\_enabled](#input\_db\_public\_network\_access\_enabled) | Public network access. Server is still by identity/authentication with public access enabled | `bool` | `true` | no |
+| <a name="input_db_public_network_access_enabled"></a> [db\_public\_network\_access\_enabled](#input\_db\_public\_network\_access\_enabled) | Public network access. Server is still by identity/authentication with public access enabled | `bool` | `false` | no |
 | <a name="input_db_restore_time"></a> [db\_restore\_time](#input\_db\_restore\_time) | Specifies the point in time (ISO8601 format) of the source database that will be restored to create the new database. This property is only settable for create\_mode= PointInTimeRestore databases. | `string` | `null` | no |
 | <a name="input_db_server_name"></a> [db\_server\_name](#input\_db\_server\_name) | MSSQL server name | `string` | n/a | yes |
 | <a name="input_db_server_sku"></a> [db\_server\_sku](#input\_db\_server\_sku) | Instance SKU, see comments above for guidance | `string` | `"GP_Fsv2_8"` | no |
