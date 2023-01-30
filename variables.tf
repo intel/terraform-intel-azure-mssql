@@ -84,7 +84,7 @@ variable "db_min_tls_version" {
 variable "db_public_network_access_enabled" {
   description = "Public network access. Server is still by identity/authentication with public access enabled"
   type        = bool
-  default     = true
+  default     = false
 }
 
 #Connection Policy of SQL server

@@ -7,7 +7,6 @@ module "optimized-mssql-server" {
   db_password         = var.db_password
   tags = { owner = "owner@intel.com",
     duration          = "3"
-    sql_public_access = "allow"
   }
 
 }

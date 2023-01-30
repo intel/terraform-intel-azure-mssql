@@ -5,6 +5,7 @@ module "optimized-mssql-server" {
   db_server_name      = "optimized-mssql-server-3"
   db_name             = "optimized-mssql-db-3"
   db_password         = var.db_password
+  db_public_network_access_enabled = true
   tags = { owner = "owner@intel.com",
     duration          = "4"
     sql_public_access = "allow"
