@@ -234,6 +234,7 @@ variable "azuread_input_variables" {
 #For example:  [{start_ip_address = ..., end_ip_address = ... },..]"
 variable "firewall_ip_range" {
   type = list(object({
+    name             = string
     start_ip_address = string
     end_ip_address   = string
   }))
