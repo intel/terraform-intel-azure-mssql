@@ -1,3 +1,11 @@
+locals {
+  firewall_rules = {
+    for rule, value in var.firewall_ip_range : value.name => {
+      start_ip_address = value.start_ip_address
+      end_ip_address   = value.end_ip_address
+    }
+  }
+}
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
@@ -62,12 +70,11 @@ resource "azurerm_mssql_database" "mssql_db" {
 }
 
 resource "azurerm_mssql_firewall_rule" "mssql_firewall_rule" {
-  count     = length(var.firewall_ip_range) == 0 ? 0 : length(var.firewall_ip_range)
-  name      = "mssql_firewall_rule_${count.index}"
-  server_id = azurerm_mssql_server.mssql_server.id
-
-  start_ip_address = var.firewall_ip_range[count.index]["start_ip_address"]
-  end_ip_address   = var.firewall_ip_range[count.index]["end_ip_address"]
+  for_each         = local.firewall_rules
+  name             = each.key
+  server_id        = azurerm_mssql_server.mssql_server.id
+  start_ip_address = each.value.start_ip_address
+  end_ip_address   = each.value.end_ip_address
 
 }
 

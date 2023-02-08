@@ -1,6 +1,6 @@
 # Provision Intel Optimized Azure MSSQL server 
 module "optimized-mssql-server" {
-  source              = "intel/azure-mssql/intel" 
+  source              = "intel/azure-mssql/intel"
   resource_group_name = "shreejan_test_mssql"
   db_server_name      = "optimized-mssql-server-2"
   db_name             = "optimized-mssql-db-2"

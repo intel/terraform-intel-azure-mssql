@@ -1,11 +1,12 @@
 # Provision Intel Optimized Azure MSSQL server 
 module "optimized-mssql-server" {
-  source              = "intel/azure-mssql/intel" 
-  resource_group_name = "shreejan_test_mssql"
-  db_server_name      = "optimized-mssql-server-4"
-  db_name             = "optimized-mssql-db-4"
-  db_password         = var.db_password
-  tags = { owner = "owner.mistry@intel.com",
+  source                           = "intel/azure-mssql/intel"
+  resource_group_name              = "shreejan_test_mssql"
+  db_server_name                   = "optimized-mssql-server-4"
+  db_name                          = "optimized-mssql-db-4"
+  db_password                      = var.db_password
+  db_public_network_access_enabled = true
+  tags = { owner = "owner@intel.com",
     duration          = "4"
     sql_public_access = "allow"
   }

@@ -42,6 +42,8 @@ module "optimized-mssql-server" {
   mssql_server_name                  = "ENTER_MSSQL_SERVER_NAME_HERE"
   mssql_db_name                      = "ENTER_MSSQL_DB_NAME_HERE"
   mssql_administrator_login_password = var.mssql_administrator_login_password
+  db_public_network_access_enabled   = true  
+
 
 #Virtual Network rule requires a virtual network within the same resource group as MSSQL Server and DB
   subnet_name                       = "ENTER_SUBNET_NAME_HERE"

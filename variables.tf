@@ -84,7 +84,7 @@ variable "db_min_tls_version" {
 variable "db_public_network_access_enabled" {
   description = "Public network access. Server is still by identity/authentication with public access enabled"
   type        = bool
-  default     = true
+  default     = false
 }
 
 #Connection Policy of SQL server
@@ -234,6 +234,7 @@ variable "azuread_input_variables" {
 #For example:  [{start_ip_address = ..., end_ip_address = ... },..]"
 variable "firewall_ip_range" {
   type = list(object({
+    name             = string
     start_ip_address = string
     end_ip_address   = string
   }))
