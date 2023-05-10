@@ -8,10 +8,54 @@
 
 ## Azure MSSQL Server Module
 
-This module can be used to deploy an Intel optimized Azure MSSQL Server instance.
+This module can be used to deploy an Intel optimized Azure SQL Server instance.
 Instance selection is included by default in the code.
 
-Additional MSSQL Optimizations can based off [Intel Xeon Tunning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configure%3E>). Scroll down to 'Tuning SQL Server for OLTP Workload' section.
+Additional MSSQL Optimizations can based off [Intel Xeon Tuning Guide](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configure%3E>). Scroll down to 'Tuning SQL Server for OLTP Workload' section.
+
+## Performance Data
+
+<center>
+
+#### [Process up to 1.37x more transactions with Azure SQL Server on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755166/get-up-to-37-more-sql-server-oltp-performance-by-selecting-premium-series-microsoft-azure-sql-managed-instance-vms-with-3rd-gen-intel-xeon-scalable-processors.html)
+
+<p align="center">
+  <a href="https://www.intel.com/content/www/us/en/content-details/755166/get-up-to-37-more-sql-server-oltp-performance-by-selecting-premium-series-microsoft-azure-sql-managed-instance-vms-with-3rd-gen-intel-xeon-scalable-processors.html">
+  <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/azure-sql-1.png?raw=true" alt="Link" width="600"/>
+  </a>
+</p>
+
+#
+
+#### [Get up to 1.39x more Azure SQL Server performance on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. competition](https://www.intel.com/content/www/us/en/content-details/764685/achieve-more-microsoft-sql-server-work-by-selecting-microsoft-azure-d-series-and-e-series-vms-enabled-by-3rd-gen-intel-xeon-scalable-processors.html)
+
+<p align="center">
+  <a href="https://www.intel.com/content/www/us/en/content-details/764685/achieve-more-microsoft-sql-server-work-by-selecting-microsoft-azure-d-series-and-e-series-vms-enabled-by-3rd-gen-intel-xeon-scalable-processors.html">
+  <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/azure-sql-2.png?raw=true" alt="Link" width="600"/>
+  </a>
+</p>
+
+#
+
+#### [Handle up to 1.48x higher Azure SQL Server online transactions on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755095/microsoft-azure-esv5-virtual-machines-delivered-up-to-48-higher-microsoft-sql-server-online-transaction-processing-performance-than-esv4-virtual-machines.html)
+
+<p align="center">
+  <a href="https://www.intel.com/content/www/us/en/content-details/755095/microsoft-azure-esv5-virtual-machines-delivered-up-to-48-higher-microsoft-sql-server-online-transaction-processing-performance-than-esv4-virtual-machines.html">
+  <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/azure-sql-3.png?raw=true" alt="Link" width="600"/>
+  </a>
+</p>
+
+#
+
+#### [Get more Azure SQL server performance on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake)](https://www.intel.com/content/www/us/en/content-details/756434/get-up-to-49-better-microsoft-sql-server-online-transaction-processing-performance-by-selecting-microsoft-azure-dsv5-virtual-machines-rather-than-dsv4-virtual-machines.html)
+
+<p align="center">
+  <a href="https://www.intel.com/content/www/us/en/content-details/756434/get-up-to-49-better-microsoft-sql-server-online-transaction-processing-performance-by-selecting-microsoft-azure-dsv5-virtual-machines-rather-than-dsv4-virtual-machines.html">
+  <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/azure-sql-4.png?raw=true" alt="Link" width="600"/>
+  </a>
+</p>
+
+</center>
 
 ## Usage
 
