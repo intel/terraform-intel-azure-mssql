@@ -2,16 +2,16 @@
   <img src="https://github.com/intel/terraform-intel-azure-mssql/blob/main/images/logo-classicblue-800px.png?raw=true" alt="Intel Logo" width="250"/>
 </p>
 
-# Intel Cloud Optimization Modules for Terraform
+# Intel Optimized Cloud Modules for Terraform
 
-© Copyright 2022, Intel Corporation
+© Copyright 2024, Intel Corporation
 
 ## Azure MSSQL Server Module
 
 This module can be used to deploy an Intel optimized Azure MSSQL Server instance.
 Instance selection is included by default in the code.
 
-Additional MSSQL Optimizations can based off [Intel Xeon Tunning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configure%3E>). Scroll down to 'Tuning SQL Server for OLTP Workload' section.
+Additional MSSQL Optimizations can based off [Intel Xeon Tuning guides](<https://www.intel.com/content/www/us/en/developer/articles/guide/sql-server-tuning-guide-for-otp-using-xeon.html#:~:text=benchmarking%20hardware%20configuration%3A-,Tuning%20SQL%20Server%20for%20OLTP%20Workload,-The%20following%20sp_configure%3E>). Scroll down to 'Tuning SQL Server for OLTP Workload' section.
 
 ## Usage
 
