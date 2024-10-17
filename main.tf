@@ -19,6 +19,7 @@ resource "azurerm_mssql_server" "mssql_server" {
   administrator_login_password  = var.db_password
   minimum_tls_version           = var.db_min_tls_version
   public_network_access_enabled = var.db_public_network_access_enabled
+  primary_user_assigned_identity_id = var.db_primary_user_assigned_identity_id
   connection_policy             = var.db_connection_policy
   tags = merge(
     var.tags,
@@ -26,7 +27,13 @@ resource "azurerm_mssql_server" "mssql_server" {
       "Intel Cloud Optimization Module" = "Azure MSSQL"
     }
   )
-
+  dynamic "identity" {
+  for_each = length(var.identity_input_variables) == 0 ? toset([]) : var.identity_input_variables
+  content {
+    type = identity.value["type"]
+    identity_ids = identity.value["ids"]
+  }
+}
   dynamic "azuread_administrator" {
     for_each = length(var.azuread_input_variables) == 0 ? toset([]) : var.azuread_input_variables
     content {

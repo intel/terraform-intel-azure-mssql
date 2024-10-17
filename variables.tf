@@ -241,3 +241,17 @@ variable "firewall_ip_range" {
   description = "User will provide range of IP adrress in form of List of (objects)"
   default     = []
 }
+
+variable "db_primary_user_assigned_identity_id" {
+  description = "Specifies the name of the db_primary_user_assigned_identity_id."
+  type        = string
+  default     = null
+}
+
+variable "identity_input_variables" {
+  type = list(object({
+    type = string
+    ids = list(string)
+  }))
+  default = [ ]
+}
