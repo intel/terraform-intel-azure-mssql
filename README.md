@@ -4,7 +4,7 @@
 
 # Intel Optimized Cloud Modules for Terraform
 
-© Copyright 2024, Intel Corporation
+© Copyright 2025, Intel Corporation
 
 ## Azure MSSQL Server Module
 
@@ -17,7 +17,7 @@ Additional MSSQL Optimizations can based off [Intel Xeon Tuning Guide](<https://
 
 <center>
 
-#### [Process up to 1.37x more transactions with Azure SQL Server on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755166/get-up-to-37-more-sql-server-oltp-performance-by-selecting-premium-series-microsoft-azure-sql-managed-instance-vms-with-3rd-gen-intel-xeon-scalable-processors.html)
+#### [Process up to 1.37x more transactions with Azure SQL Server on 4th Generation Intel® Xeon® Scalable Processor (Sapphire Rapids) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755166/get-up-to-37-more-sql-server-oltp-performance-by-selecting-premium-series-microsoft-azure-sql-managed-instance-vms-with-3rd-gen-intel-xeon-scalable-processors.html)
 
 <p align="center">
   <a href="https://www.intel.com/content/www/us/en/content-details/755166/get-up-to-37-more-sql-server-oltp-performance-by-selecting-premium-series-microsoft-azure-sql-managed-instance-vms-with-3rd-gen-intel-xeon-scalable-processors.html">
@@ -27,7 +27,7 @@ Additional MSSQL Optimizations can based off [Intel Xeon Tuning Guide](<https://
 
 #
 
-#### [Get up to 1.39x more Azure SQL Server performance on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. competition](https://www.intel.com/content/www/us/en/content-details/764685/achieve-more-microsoft-sql-server-work-by-selecting-microsoft-azure-d-series-and-e-series-vms-enabled-by-3rd-gen-intel-xeon-scalable-processors.html)
+#### [Get up to 1.39x more Azure SQL Server performance on 4th Generation Intel® Xeon® Scalable Processor (Sapphire Rapids) vs. competition](https://www.intel.com/content/www/us/en/content-details/764685/achieve-more-microsoft-sql-server-work-by-selecting-microsoft-azure-d-series-and-e-series-vms-enabled-by-3rd-gen-intel-xeon-scalable-processors.html)
 
 <p align="center">
   <a href="https://www.intel.com/content/www/us/en/content-details/764685/achieve-more-microsoft-sql-server-work-by-selecting-microsoft-azure-d-series-and-e-series-vms-enabled-by-3rd-gen-intel-xeon-scalable-processors.html">
@@ -37,7 +37,7 @@ Additional MSSQL Optimizations can based off [Intel Xeon Tuning Guide](<https://
 
 #
 
-#### [Handle up to 1.48x higher Azure SQL Server online transactions on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755095/microsoft-azure-esv5-virtual-machines-delivered-up-to-48-higher-microsoft-sql-server-online-transaction-processing-performance-than-esv4-virtual-machines.html)
+#### [Handle up to 1.48x higher Azure SQL Server online transactions on 4th Generation Intel® Xeon® Scalable Processor (Sapphire Rapids) vs. older instances](https://www.intel.com/content/www/us/en/content-details/755095/microsoft-azure-esv5-virtual-machines-delivered-up-to-48-higher-microsoft-sql-server-online-transaction-processing-performance-than-esv4-virtual-machines.html)
 
 <p align="center">
   <a href="https://www.intel.com/content/www/us/en/content-details/755095/microsoft-azure-esv5-virtual-machines-delivered-up-to-48-higher-microsoft-sql-server-online-transaction-processing-performance-than-esv4-virtual-machines.html">
@@ -47,7 +47,7 @@ Additional MSSQL Optimizations can based off [Intel Xeon Tuning Guide](<https://
 
 #
 
-#### [Get more Azure SQL server performance on 3rd Generation Intel® Xeon® Scalable Processor (Ice Lake)](https://www.intel.com/content/www/us/en/content-details/756434/get-up-to-49-better-microsoft-sql-server-online-transaction-processing-performance-by-selecting-microsoft-azure-dsv5-virtual-machines-rather-than-dsv4-virtual-machines.html)
+#### [Get more Azure SQL server performance on 4th Generation Intel® Xeon® Scalable Processor (Sapphire Rapids)](https://www.intel.com/content/www/us/en/content-details/756434/get-up-to-49-better-microsoft-sql-server-online-transaction-processing-performance-by-selecting-microsoft-azure-dsv5-virtual-machines-rather-than-dsv4-virtual-machines.html)
 
 <p align="center">
   <a href="https://www.intel.com/content/www/us/en/content-details/756434/get-up-to-49-better-microsoft-sql-server-online-transaction-processing-performance-by-selecting-microsoft-azure-dsv5-virtual-machines-rather-than-dsv4-virtual-machines.html">
