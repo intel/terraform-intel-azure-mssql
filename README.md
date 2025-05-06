@@ -4,7 +4,7 @@
 
 # Intel Optimized Cloud Modules for Terraform
 
-© Copyright 2024, Intel Corporation
+© Copyright 2025, Intel Corporation
 
 ## Azure MSSQL Server Module
 
@@ -122,6 +122,11 @@ This module further provides the ability to add firewall_ip_range, virtual netwo
 No modules.
 
 ## Resources
+
+## Links
+https://learn.microsoft.com/en-us/azure/virtual-machines/fsv2-series
+
+https://azure.microsoft.com/en-us/pricing/details/azure-sql-database/single/
 
 | Name | Type |
 |------|------|
